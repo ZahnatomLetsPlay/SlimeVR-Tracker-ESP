@@ -26,9 +26,9 @@
 class MPU6050Sensor : public Sensor
 {
 public:
-    MPU6050Sensor(){};
+    MPU6050Sensor() : Sensor("MPU6050Sensor"){};
     ~MPU6050Sensor(){};
-   void motionSetup() override final;
+    void motionSetup() override final;
     void motionLoop() override final;
     void startCalibration(int calibrationType) override final;
 

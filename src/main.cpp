@@ -33,14 +33,15 @@
 #include "ledmgr.h"
 #include "batterymonitor.h"
 #include "UI\UI.h"
+#include "logging/Logger.h"
 
+SlimeVR::Logging::Logger logger("SlimeVR");
 
 SensorFactory sensors {};
 int sensorToCalibrate = -1;
 bool blinking = false;
 unsigned long blinkStart = 0;
 unsigned long loopTime = 0;
-unsigned long last_rssi_sample = 0;
 bool secondImuActive = false;
 BatteryMonitor battery;
 
@@ -57,6 +58,15 @@ UI::SetMessage(1);
 
 
 
+    Serial.begin(serialBaudRate);
+    Serial.println();
+    Serial.println();
+    Serial.println();
+
+    logger.info("SlimeVR v" FIRMWARE_VERSION " starting up...");
+
+    //wifi_set_sleep_type(NONE_SLEEP_T);
+    // Glow diode while loading
 #if ENABLE_LEDS
     pinMode(LOADING_LED, OUTPUT);
     pinMode(CALIBRATING_LED, OUTPUT);
@@ -64,13 +74,10 @@ UI::SetMessage(1);
     LEDManager::on(LOADING_LED);
 #endif
 
-    Serial.begin(serialBaudRate);
     SerialCommands::setUp();
-    Serial.println();
-    Serial.println();
-    Serial.println();
+
 #if IMU == IMU_MPU6500 || IMU == IMU_MPU6050 || IMU == IMU_MPU9250
-    I2CSCAN::clearBus(PIN_IMU_SDA, PIN_IMU_SCL); // Make sure the bus isn't suck when reseting ESP without powering it down
+    I2CSCAN::clearBus(PIN_IMU_SDA, PIN_IMU_SCL); // Make sure the bus isn't stuck when resetting ESP without powering it down
     // Do it only for MPU, cause reaction of BNO to this is not investigated yet
 #endif
     // join I2C bus
@@ -94,16 +101,14 @@ UI::SetMessage(1);
     loopTime = micros();
 }
 
-
-
 void loop()
 {
     LEDManager::ledStatusUpdate();
     SerialCommands::update();
     OTA::otaUpdate();
-    Network::update(sensors.IMUs);
+    Network::update(sensors.getFirst(), sensors.getSecond());
 #ifndef UPDATE_IMU_UNCONNECTED
-    if (isConnected())
+    if (ServerConnection::isConnected())
     {
 #endif
         sensors.motionLoop();
@@ -112,7 +117,7 @@ void loop()
 #endif
     // Send updates
 #ifndef SEND_UPDATES_UNCONNECTED
-    if (isConnected())
+    if (ServerConnection::isConnected())
     {
 #endif
         sensors.sendData();
@@ -122,12 +127,12 @@ void loop()
     battery.Loop();
 
 #ifdef TARGET_LOOPTIME_MICROS
-    auto elapsed = (micros() - loopTime);
+    long elapsed = (micros() - loopTime);
     if (elapsed < TARGET_LOOPTIME_MICROS)
     {
-        auto sleepus = TARGET_LOOPTIME_MICROS - elapsed - 100;//µs to sleep
-        auto sleepms = sleepus / 1000;//ms to sleep
-        if (sleepms) // if >= 1 ms
+        long sleepus = TARGET_LOOPTIME_MICROS - elapsed - 100;//µs to sleep
+        long sleepms = sleepus / 1000;//ms to sleep
+        if(sleepms > 0) // if >= 1 ms
         {
             delay(sleepms); // sleep ms = save power
             sleepus -= sleepms * 1000;
@@ -139,10 +144,4 @@ void loop()
     }
     loopTime = micros();
 #endif
-    // TODO Move to WiFi handler
-    if(micros() - last_rssi_sample >= 2000) {
-        last_rssi_sample = micros();
-        uint8_t signalStrength = WiFi.RSSI();
-        Network::sendSignalStrength(signalStrength);
-    }
 }

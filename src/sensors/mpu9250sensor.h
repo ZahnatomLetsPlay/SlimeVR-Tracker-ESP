@@ -21,31 +21,37 @@
     THE SOFTWARE.
 */
 #include "sensor.h"
+#include "logging/Logger.h"
 
-#include <MPU9250.h>
+#include <MPU9250_6Axis_MotionApps_V6_12.h>
 
 class MPU9250Sensor : public Sensor
 {
 public:
-    MPU9250Sensor(){};
+    MPU9250Sensor() : Sensor("MPU9250Sensor"){};
     ~MPU9250Sensor(){};
     void motionSetup() override final;
     void motionLoop() override final;
     void startCalibration(int calibrationType) override final;
     void getMPUScaled();
-    void MahonyQuaternionUpdate(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz, float deltat);
 
 private:
     MPU9250 imu{};
+    CalibrationConfig *calibration;
+    bool dmpReady = false;    // set true if DMP init was successful
+    uint8_t mpuIntStatus;     // holds actual interrupt status byte from MPU
+    uint8_t devStatus;        // return status after each device operation (0 = success, !0 = error)
+    uint16_t packetSize;      // expected DMP packet size (default is 42 bytes)
+    uint16_t fifoCount;       // count of all bytes currently in FIFO
+    uint8_t fifoBuffer[64]{}; // FIFO storage buffer
     //raw data and scaled as vector
-    int16_t ax, ay, az;
-    int16_t gx, gy, gz;
-    int16_t mx, my, mz;
+    int skipCalcMag = 0;
+    float q[4]{1.0f, 0.0f, 0.0f, 0.0f}; // for raw filter
     float Axyz[3]{};
     float Gxyz[3]{};
     float Mxyz[3]{};
     float rawMag[3]{};
-    float q[4]{1.0, 0.0, 0.0, 0.0};
+    Quat correction{0,0,0,0};
     // Loop timing globals
     unsigned long now = 0, last = 0; //micros() timers
     float deltat = 0;                //loop time in seconds

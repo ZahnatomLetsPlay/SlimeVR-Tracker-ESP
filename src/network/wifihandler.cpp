@@ -23,6 +23,7 @@
 #include "globals.h"
 #include "network.h"
 #include "ledmgr.h"
+#include "logging/Logger.h"
 #if !ESP8266
 #include "esp_wifi.h"
 #endif
@@ -32,6 +33,10 @@ unsigned long wifiConnectionTimeout = millis();
 bool isWifiConnected = false;
 uint8_t wifiState = 0;
 bool hadWifi = false;
+unsigned long last_rssi_sample = 0;
+
+// TODO: Cleanup with proper classes
+SlimeVR::Logging::Logger wifiHandlerLogger("WiFiHandler");
 
 void reportWifiError() {
     if(lastWifiReportTime + 1000 < millis()) {
@@ -58,16 +63,15 @@ IPAddress WiFiNetwork::getAddress() {
 }
 
 void WiFiNetwork::setUp() {
-    Serial.println("[NOTICE] WiFi: Setting up WiFi");
+    wifiHandlerLogger.info("Setting up WiFi");
     WiFi.persistent(true);
     WiFi.mode(WIFI_STA);
     WiFi.hostname("SlimeVR FBT Tracker");
-    Serial.printf("[NOTICE] WiFi: Loaded credentials for SSID %s and pass length %d\n", WiFi.SSID().c_str(), WiFi.psk().length());
+    wifiHandlerLogger.info("Loaded credentials for SSID %s and pass length %d", WiFi.SSID().c_str(), WiFi.psk().length());
     wl_status_t status = WiFi.begin(); // Should connect to last used access point, see https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/station-class.html#begin
-    Serial.printf("[NOTICE] Status: %d", status);
+    wifiHandlerLogger.debug("Status: %d", status);
     wifiState = 1;
     wifiConnectionTimeout = millis();
-    UI::SetMessage(2);
     
 #if ESP8266
 #if POWERSAVING_MODE == POWER_SAVING_NONE
@@ -95,7 +99,7 @@ void WiFiNetwork::setUp() {
     }
     else
     {
-        Serial.println("[ERR] Unable to get wifi config, power saving not enabled!");
+        wifiHandlerLogger.error("Unable to get WiFi config, power saving not enabled!");
     }
 #endif
 #endif
@@ -106,16 +110,14 @@ void onConnected() {
     LEDManager::unsetLedStatus(LED_STATUS_WIFI_CONNECTING);
     isWifiConnected = true;
     hadWifi = true;
-    Serial.printf("[NOTICE] WiFi: Connected successfully to SSID '%s', ip address %s\n", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
-    UI::SetMessage(4);
-
+    wifiHandlerLogger.info("Connected successfully to SSID '%s', ip address %s", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
 }
 
 void WiFiNetwork::upkeep() {
     upkeepProvisioning();
     if(WiFi.status() != WL_CONNECTED) {
         if(isWifiConnected) {
-            Serial.printf("[NOTICE] WiFi: Connection to WiFi lost, reconnecting...");
+            wifiHandlerLogger.warn("Connection to WiFi lost, reconnecting...");
             isWifiConnected = false;
         }
         LEDManager::setLedStatus(LED_STATUS_WIFI_CONNECTING);
@@ -129,8 +131,8 @@ void WiFiNetwork::upkeep() {
                         // Try hardcoded credentials now
                         WiFi.begin(WIFI_CREDS_SSID, WIFI_CREDS_PASSWD);
                         wifiConnectionTimeout = millis();
-                        Serial.printf("[NOTICE] WiFi: Can't connect from saved credentials, status: %d.\n", WiFi.status());
-                        Serial.println("[NOTICE] WiFi: Trying hardcoded credentials...");
+                        wifiHandlerLogger.error("Can't connect from saved credentials, status: %d.", WiFi.status());
+                        wifiHandlerLogger.debug("Trying hardcoded credentials...");
                     #endif
                     wifiState = 2;
                 return;
@@ -138,8 +140,7 @@ void WiFiNetwork::upkeep() {
                     // Start smart config
                     if(!hadWifi && !WiFi.smartConfigDone() && wifiConnectionTimeout + 11000 < millis()) {
                         if(WiFi.status() != WL_IDLE_STATUS) {
-                            Serial.printf("[NOTICE] WiFi: Can't connect from any credentials, status: %d.\n", WiFi.status());
-                                UI::SetMessage(3);
+                            wifiHandlerLogger.error("Can't connect from any credentials, status: %d.", WiFi.status());
                         }
                         startProvisioning();
                     }
@@ -151,6 +152,12 @@ void WiFiNetwork::upkeep() {
     if(!isWifiConnected) {
         onConnected();
         return;
+    } else {
+        if(millis() - last_rssi_sample >= 2000) {
+            last_rssi_sample = millis();
+            uint8_t signalStrength = WiFi.RSSI();
+            Network::sendSignalStrength(signalStrength);
+        }
     }
     return;
 }

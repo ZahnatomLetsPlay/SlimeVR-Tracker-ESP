@@ -29,6 +29,8 @@
 #include <vector3.h>
 #include "configuration.h"
 #include "globals.h"
+#include "logging/Logger.h"
+#include "utils.h"
 
 #define DATA_TYPE_NORMAL 1
 #define DATA_TYPE_CORRECTION 2
@@ -36,7 +38,8 @@
 class Sensor
 {
 public:
-    Sensor(){Connected = true;};
+    Sensor(const char *sensorName) : m_Logger(SlimeVR::Logging::Logger(sensorName)){}
+
     virtual ~Sensor(){};
     void setupSensor(uint8_t expectedSensorType, uint8_t sensorId, uint8_t addr, uint8_t intPin);
     virtual void motionSetup(){};
@@ -55,8 +58,6 @@ public:
         return sensorType;
     };
 
-    bool Connected = true;
-
 protected:
     uint8_t addr = 0;
     uint8_t intPin = 255;
@@ -70,12 +71,14 @@ protected:
 
     Quat quaternion{};
     Quat lastQuatSent{};
+
+    SlimeVR::Logging::Logger m_Logger;
 };
 
 class EmptySensor : public Sensor
 {
 public:
-    EmptySensor(){Connected = false;};
+    EmptySensor() : Sensor("EmptySensor"){};
     ~EmptySensor(){};
     void motionSetup() override final{};
     void motionLoop() override final{};

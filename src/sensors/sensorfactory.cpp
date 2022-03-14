@@ -27,6 +27,8 @@
 #include "bno080sensor.h"
 #include "mpu9250sensor.h"
 #include "mpu6050sensor.h"
+#include "bmi160sensor.h"
+#include "icm20948sensor.h"
 
 SensorFactory::SensorFactory()
 {

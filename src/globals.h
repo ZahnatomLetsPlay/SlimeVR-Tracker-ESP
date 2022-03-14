@@ -34,9 +34,16 @@
 #define MUX_Reset_Pin D0
 
 
+#ifndef SECOND_IMU
+#define SECOND_IMU IMU
+#endif
+
+#ifndef SECOND_IMU_ROTATION
+#define SECOND_IMU_ROTATION IMU_ROTATION
+#endif
+
 #ifndef BATTERY_MONITOR
 #define BATTERY_MONITOR BAT_INTERNAL
 #endif
-
 
 #endif // SLIMEVR_GLOBALS_H_

@@ -28,9 +28,6 @@
 
 class SensorFactory
 {
-
-
-
 public:
     SensorFactory();
     ~SensorFactory();
