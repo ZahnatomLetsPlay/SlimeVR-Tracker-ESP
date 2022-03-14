@@ -55,9 +55,12 @@
 
 #define serialDebug false // Set to true to get Serial output for debugging
 #define serialBaudRate 115200
+<<<<<<< HEAD
 #define UPDATE_IMU_UNCONNECTED 1
 //#define SEND_UPDATES_UNCONNECTED 1
 >>>>>>> upstream/main
+=======
+>>>>>>> 08cc9aca7676fda3dd21a4031fdce5dc82d0dba5
 #define LED_INTERVAL_STANDBUY 10000
 #define STATUS_PRINT_INTERVAL 15000
 #define ENABLE_LEDS true
