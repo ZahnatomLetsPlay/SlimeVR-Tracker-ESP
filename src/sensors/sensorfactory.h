@@ -20,46 +20,27 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
-#ifndef SLIMEVR_ICM20948SENSOR_H_
-#define SLIMEVR_ICM20948SENSOR_H_
+#ifndef SLIMEVR_SENSORFACTORY_H_
+#define SLIMEVR_SENSORFACTORY_H_
 
-#include <ICM_20948.h>
+#include "globals.h"
 #include "sensor.h"
-#include <arduino-timer.h> // Used for periodically saving bias
-#ifdef ESP32
-#include <Preferences.h> // ICM bias saving. ESP8266 use eprom
-#endif
 
-class ICM20948Sensor : public Sensor
+class SensorFactory
 {
+
+
+
 public:
-    ICM20948Sensor(uint8_t id, uint8_t address, float rotation) : Sensor("ICM20948Sensor", IMU_ICM20948, id, address, rotation) {}
-    ~ICM20948Sensor() override = default;
-    void motionSetup() override final;
-    void motionLoop() override final;
-    void sendData() override final;
-    void startCalibration(int calibrationType) override final;
-    void save_bias(bool repeat);
-    void load_bias();
-
-private:
-    unsigned long lastData = 0;
-    int bias_save_counter = 0;
-    bool newTap;
-
-    ICM_20948_I2C imu;
-    ICM_20948_Device_t pdev;
-    icm_20948_DMP_data_t dmpData{};
-
-#define OVERRIDEDMPSETUP true
-#ifdef ESP32
-    Preferences prefs;
-    Timer<> timer = timer_create_default();
-#endif
-#ifdef ESP8266
-    Timer<> timer = timer_create_default();
-#endif
-    // TapDetector tapDetector;
+    SensorFactory();
+    ~SensorFactory();
+    void create();
+    void motionSetup();
+    void motionLoop();
+    void sendData();
+    void startCalibration(int sensorId, int calibrationType);
+    void SetIMU(uint8_t bus);
+    Sensor *IMUs[IMUCount];
 };
 
-#endif // SLIMEVR_ICM20948SENSOR_H_
+#endif // SLIMEVR_SENSORFACTORY_H_

@@ -22,20 +22,20 @@
 */
 // ================================================
 // See docs for configuration options and examples:
-// https://docs.slimevr.dev/firmware/configuring-project.html#2-configuring-definesh
+// https://docs.slimevr.dev/configuring-project.html#configuring-definesh
 // ================================================
 
 // Set parameters of IMU and board used
-#define IMU IMU_BNO085
-#define SECOND_IMU IMU
-#define BOARD BOARD_SLIMEVR
-#define IMU_ROTATION DEG_90
-#define SECOND_IMU_ROTATION DEG_270
+#define IMU IMU_MPU6500
+#define BOARD BOARD_WEMOSD1MINI
+#define IMU_ROTATION DEG_180
+
 
 // Battery monitoring options (comment to disable):
 // BAT_EXTERNAL for ADC pin, BAT_INTERNAL for internal - can detect only low battery, BAT_MCP3021 for external ADC
 #define BATTERY_MONITOR BAT_EXTERNAL
 #define BATTERY_SHIELD_RESISTANCE 180 //130k BatteryShield, 180k SlimeVR or fill in external resistor value in kOhm
+
 
 // Board-specific configurations
 #if BOARD == BOARD_SLIMEVR || BOARD == BOARD_SLIMEVR_DEV
@@ -56,7 +56,6 @@
   #define PIN_IMU_INT 255
   #define PIN_IMU_INT_2 255
   #define ENABLE_LEDS false
-  #define PIN_BATTERY_LEVEL 255
 #elif BOARD == BOARD_TTGO_TBASE
   #define PIN_IMU_SDA 5
   #define PIN_IMU_SCL 4

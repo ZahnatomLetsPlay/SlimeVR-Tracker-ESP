@@ -109,6 +109,8 @@ int8_t I2Cdev::readBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t
     return count;
 }
 
+
+
 /** Read a single bit from a 16-bit device register.
  * @param devAddr I2C slave device address
  * @param regAddr Register regAddr to read from

@@ -36,18 +36,37 @@ THE SOFTWARE.
 */
 
 #include "MPU6050.h"
+
+/** Specific address constructor.
+ * @param address I2C address, uses default I2C address if none is specified
+ * @see MPU6050_DEFAULT_ADDRESS
+ * @see MPU6050_ADDRESS_AD0_LOW
+ * @see MPU6050_ADDRESS_AD0_HIGH
+ */
+MPU6050::MPU6050(uint8_t address):devAddr(address) {
+}
+
+/** Power on and prepare for general usage.
+ * This will activate the device and take it out of sleep mode (which must be done
+ * after start-up). This function also sets both the accelerometer and the gyroscope
+ * to their most sensitive settings, namely +/- 2g and +/- 250 degrees/sec, and sets
+ * the clock source to use the X Gyro for reference, which is slightly better than
+ * the default internal clock source.
+ */
+void MPU6050::initialize(uint8_t address) {
     devAddr = address;
     setClockSource(MPU6050_CLOCK_PLL_XGYRO);
+    setFullScaleGyroRange(MPU6050_GYRO_FS_250);
     setFullScaleAccelRange(MPU6050_ACCEL_FS_2);
     setSleepEnabled(false); // thanks to Jack Elston for pointing this one out!
 }
 
+/** Verify the I2C connection.
  * Make sure the device is connected and responds as expected.
  * @return True if connection is valid, false otherwise
  */
 bool MPU6050::testConnection() {
-    uint8_t deviceId = getDeviceID();
-    return deviceId == 0x68 || deviceId == 0x70 || deviceId == 0x71 || deviceId == 0x73; // Allow any MPUs
+    return getDeviceID() > 0;
 }
 
 // AUX_VDDIO register (InvenSense demo code calls this RA_*G_OFFS_TC)
@@ -2782,7 +2801,7 @@ void MPU6050::setFIFOByte(uint8_t data) {
  * @see MPU6050_WHO_AM_I_LENGTH
  */
 uint8_t MPU6050::getDeviceID() {
-    I2Cdev::readByte(devAddr, MPU6050_RA_WHO_AM_I, buffer);
+    I2Cdev::readBits(devAddr, MPU6050_RA_WHO_AM_I, MPU6050_WHO_AM_I_BIT, MPU6050_WHO_AM_I_LENGTH, buffer);
     return buffer[0];
 }
 /** Set Device ID.

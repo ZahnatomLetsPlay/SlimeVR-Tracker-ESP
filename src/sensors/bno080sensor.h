@@ -26,8 +26,7 @@
 class BNO080Sensor : public Sensor
 {
 public:
-    BNO080Sensor(uint8_t id, uint8_t type, uint8_t address, float rotation, uint8_t intPin)
-        : Sensor("BNO080Sensor", type, id, address, rotation), m_IntPin(intPin) {};
+    BNO080Sensor(){};
     ~BNO080Sensor(){};
     void motionSetup() override final;
     void motionLoop() override final;
@@ -38,12 +37,9 @@ public:
 private:
     BNO080 imu{};
 
-    uint8_t m_IntPin;
-
     uint8_t tap;
     unsigned long lastData = 0;
     uint8_t lastReset = 0;
-    BNO080Error lastError{};
 
     // Magnetometer specific members
     Quat magQuaternion{};

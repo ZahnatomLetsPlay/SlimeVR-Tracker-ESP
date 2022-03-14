@@ -27,8 +27,6 @@
 #include "bno080sensor.h"
 #include "mpu9250sensor.h"
 #include "mpu6050sensor.h"
-#include "bmi160sensor.h"
-#include "icm20948sensor.h"
 
 SensorFactory::SensorFactory()
 {
@@ -94,8 +92,11 @@ void SensorFactory::motionLoop()
 {
     for (int SensorCount = 0; SensorCount < IMUCount; SensorCount++)
     {
-        this->SetIMU(SensorCount);
-        IMUs[SensorCount]->motionLoop();
+        if (IMUs[SensorCount]->Connected)
+        {
+            this->SetIMU(SensorCount);
+            IMUs[SensorCount]->motionLoop();
+        }
     }
 }
 
@@ -103,9 +104,11 @@ void SensorFactory::sendData()
 {
     for (int SensorCount = 0; SensorCount < IMUCount; SensorCount++)
     {
-
-        this->SetIMU(SensorCount);
-        IMUs[SensorCount]->sendData();
+        if (IMUs[SensorCount]->Connected)
+        {
+            this->SetIMU(SensorCount);
+            IMUs[SensorCount]->sendData();
+        }
     }
 }
 

@@ -24,8 +24,6 @@
 
 namespace LEDManager
 {
-    SlimeVR::Logging::Logger logger("LEDManager");
-
     /*!
     *  @brief  Turn a LED on
     *  @param  pin
@@ -34,7 +32,7 @@ namespace LEDManager
     void on(uint8_t pin)
     {
         #if ENABLE_LEDS
-            digitalWrite(pin, LOW);
+            digitalWrite(pin, HIGH);
         #endif
     }
 
@@ -46,7 +44,7 @@ namespace LEDManager
     void off(uint8_t pin)
     {
         #if ENABLE_LEDS
-            digitalWrite(pin, HIGH);
+            digitalWrite(pin, LOW);
         #endif
     }
 
@@ -62,9 +60,9 @@ namespace LEDManager
     void blink(uint8_t pin, unsigned long time, uint8_t direction)
     {
         #if ENABLE_LEDS
-            digitalWrite(pin, direction);
-            delay(time);
             digitalWrite(pin, direction ^ 1);
+            delay(time);
+            digitalWrite(pin, direction);
         #endif
     }
 
@@ -86,9 +84,9 @@ namespace LEDManager
         #if ENABLE_LEDS
             for (int i = 0; i < times; i++)
             {
-                digitalWrite(pin, direction);
-                delay(timeon);
                 digitalWrite(pin, direction ^ 1);
+                delay(timeon);
+                digitalWrite(pin, direction);
                 delay(timeoff);
             }
         #endif
@@ -116,8 +114,8 @@ namespace LEDManager
             return;
         lastUpdate = time;
 
-        unsigned int length;
-        unsigned int count;
+        unsigned int length = DEFAULT_GAP;
+        unsigned int count = 0;
         bool printStatus = false;
         #if defined(STATUS_PRINT_INTERVAL) && STATUS_PRINT_INTERVAL > 0
             if(statusPrintInterval += diff > STATUS_PRINT_INTERVAL) {
@@ -140,7 +138,7 @@ namespace LEDManager
                     break;
                 }
             if(printStatus)
-                logger.debug("LOW BATTERY");
+                Serial.println("[STATUS] LOW BATTERY");
         } else if((currentStatus & LED_STATUS_IMU_ERROR) > 0) {
             count = IMU_ERROR_COUNT;
             switch(currentStage) {
@@ -156,7 +154,7 @@ namespace LEDManager
                     break;
                 }
             if(printStatus)
-                logger.debug("IMU ERROR");
+                Serial.println("[STATUS] IMU ERROR");
         } else if((currentStatus & LED_STATUS_WIFI_CONNECTING) > 0) {
             count = WIFI_CONNECTING_COUNT;
             switch(currentStage) {
@@ -172,7 +170,7 @@ namespace LEDManager
                     break;
                 }
             if(printStatus)
-                logger.debug("WIFI CONNECTING");
+                Serial.println("[STATUS] WIFI CONNECTING");
         } else if((currentStatus & LED_STATUS_SERVER_CONNECTING) > 0) {
             count = SERVER_CONNECTING_COUNT;
             switch(currentStage) {
@@ -188,10 +186,10 @@ namespace LEDManager
                     break;
                 }
             if(printStatus)
-                logger.debug("SERVER CONNECTING");
+                Serial.println("[STATUS] SERVER CONNECTING");
         } else {
             if(printStatus)
-                logger.debug("OK");
+                Serial.println("[STATUS] OK");
             #if defined(LED_INTERVAL_STANDBUY) && LED_INTERVAL_STANDBUY > 0
                 count = 1;
                 switch(currentStage) {
