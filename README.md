@@ -12,28 +12,28 @@ Firmware configuration is located in the `defines.h` file. For more information 
 
 The following IMUs and their corresponding `IMU` values are supported by the firmware:
 
-- BNO085 & BNO086 (IMU_BNO085)
-  - Using any fusion in internal DMP. Best results with ARVR Stabilized Game Rotation Vector or ARVR Stabilized Rotation Vector if in good magnetic environment.
-- BNO080 (IMU_BNO080)
-  - Using any fusion in internal DMP. Doesn't have BNO085's ARVR stabilization, but still gives good results.
+- 	~~BNO085 & BNO086 (IMU_BNO085)~~
+  - ~~Using any fusion in internal DMP. Best results with ARVR Stabilized Game Rotation Vector or ARVR Stabilized Rotation Vector if in good magnetic environment.~~
+- ~~BNO080 (IMU_BNO080)~~
+  - ~~Using any fusion in internal DMP. Doesn't have BNO085's ARVR stabilization, but still gives good results.~~
 - MPU-6500 (IMU_MPU6500) & MPU-6050 (IMU_MPU6050)
   - Using internal DMP to fuse Gyroscope and Accelerometer. Can drift substantially.
   - NOTE: Currently the MPU will auto calibrate when powered on. You _must_ place it on the ground and _DO NOT_ move it until calibration is complete (for a few seconds). **LED on the ESP will blink 5 times after calibration is over.**
-- BNO055 (IMU_BNO055)
-  - Performs much worse than BNO080, despite having the same hardware. Not recommended for use.
-- MPU-9250 (IMU_MPU9250)
-  - Using Mahony sensor fusion of Gyroscope, Magnetometer and Accelerometer, requires good magnetic environment.
-  - See _Sensor calibration_ below for info on calibrating this sensor.
-  - Specify `IMU_MPU6500` in your `defines.h` to use without magentometer in 6DoF mode.
-  - Experimental support!
-- BMI160 (IMU_BMI160)
-  - Using Mahony sensor fusion of Gyroscope and Accelerometer
-  - See _Sensor calibration_ below for info on calibrating this sensor.
-  - Experimental support!
-- ICM-20948 (IMU_ICM20948)
-  - Using fision in internal DMP for 6Dof or 9DoF, 9DoF mode requires good magnetic environment.
-  - Comment out `USE_6DOF` in `debug.h` for 9DoF mode.
-  - Experimental support!
+- ~~BNO055 (IMU_BNO055)~~
+  - ~~Performs much worse than BNO080, despite having the same hardware. Not recommended for use.~~
+- ~~MPU-9250 (IMU_MPU9250)~~
+  - ~~Using Mahony sensor fusion of Gyroscope, Magnetometer and Accelerometer, requires good magnetic environment.~~
+  - ~~See _Sensor calibration_ below for info on calibrating this sensor.~~
+  - ~~Specify `IMU_MPU6500` in your `defines.h` to use without magentometer in 6DoF mode.~~
+  - ~~Experimental support!~~
+- ~~BMI160 (IMU_BMI160)~~
+  - ~~Using Mahony sensor fusion of Gyroscope and Accelerometer~~
+  - ~~See _Sensor calibration_ below for info on calibrating this sensor.~~
+  - ~~Experimental support!~~
+- ~~ICM-20948 (IMU_ICM20948)~~
+  - ~~Using fision in internal DMP for 6Dof or 9DoF, 9DoF mode requires good magnetic environment.~~
+  - ~~Comment out `USE_6DOF` in `debug.h` for 9DoF mode.~~
+  - ~~Experimental support!~~
 
 Firmware can work with both ESP8266 and ESP32. Please edit `defines.h` and set your pinout properly according to how you connected the IMU.
 
