@@ -23,7 +23,6 @@
 #ifndef SLIMEVR_DEBUG_H_
 #define SLIMEVR_DEBUG_H_
 #include "consts.h"
-<<<<<<< HEAD
 
 #define IMU_MPU6050_RUNTIME_CALIBRATION // Comment to revert to startup/traditional-calibration
 #define BNO_USE_ARVR_STABILIZATION // Comment to not use stabilization for BNO085+ IMUs
@@ -34,7 +33,7 @@
 #define serialBaudRate 115200
 #define UPDATE_IMU_UNCONNECTED 1
 #define SEND_UPDATES_UNCONNECTED 1
-=======
+
 #include "logging/Level.h"
 
 #define IMU_MPU6050_RUNTIME_CALIBRATION // Comment to revert to startup/traditional-calibration
@@ -55,27 +54,13 @@
 
 #define serialDebug false // Set to true to get Serial output for debugging
 #define serialBaudRate 115200
-<<<<<<< HEAD
+
 #define UPDATE_IMU_UNCONNECTED 1
-//#define SEND_UPDATES_UNCONNECTED 1
->>>>>>> upstream/main
-=======
->>>>>>> 08cc9aca7676fda3dd21a4031fdce5dc82d0dba5
+
 #define LED_INTERVAL_STANDBUY 10000
 #define STATUS_PRINT_INTERVAL 15000
 #define ENABLE_LEDS true
 
-<<<<<<< HEAD
-#define LOADING_LED D6
-#define CALIBRATING_LED D7
-#define STATUS_LED D8
-
-// Determines how often we sample and send data
-#define samplingRateInMillis 12
-
-// Sleeping options
-#define POWERSAVING_MODE POWER_SAVING_LEGACY 
-=======
 #define LOADING_LED LED_BUILTIN
 #define CALIBRATING_LED LED_BUILTIN
 #define STATUS_LED LED_BUILTIN
@@ -85,7 +70,6 @@
 
 // Sleeping options
 #define POWERSAVING_MODE POWER_SAVING_MINIMUM
->>>>>>> upstream/main
 #if POWERSAVING_MODE >= POWER_SAVING_MINIMUM
     #define TARGET_LOOPTIME_MICROS (samplingRateInMillis * 1000)
 #endif
