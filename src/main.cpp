@@ -33,6 +33,8 @@
 #include "ledmgr.h"
 #include "batterymonitor.h"
 #include "UI\UI.h"
+#include "ICM_20948.h" 
+#include <Adafruit_MCP23X08.h>
 
 
 SensorFactory sensors {};
