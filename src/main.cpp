@@ -60,8 +60,8 @@ void isr(void)
    detachInterrupt(digitalPinToInterrupt(INTPIN));
    interrupts(); 
    IMU_INT_Event = true;
-   IMU_INT_Index =  CS.getIntF(0);
-   CS.portCaptureRead(0);
+   IMU_INT_Index =  CS.getIntF();
+   CS.portCaptureRead();
    controlArduioInt;  
 }
 
@@ -74,12 +74,12 @@ pinMode(MUX_Reset_Pin, INPUT);
  
 CS.initialize();
 
-CS.portMode(0, 0xffff);   // Chip pins on port to inputs.
-CS.portPullup(0, 0xffff); // All pins on port to pullup.
-CS.portInterrupts(0, 0x0000, 0xFFFF, 0X0000);  //
-CS.portCaptureRead(0); // Read capture reg. to clear ints.
-CS.portInterrupts(1, 0xffff, 0xFFFF, 0X0000);
-CS.portIntPinConfig(0,1,0);
+CS.portMode( 0xffff);   // Chip pins on port to inputs.
+CS.portPullup( 0xffff); // All pins on port to pullup.
+CS.portInterrupts(0x0000, 0xFFFF, 0X0000);  //
+CS.portCaptureRead(); // Read capture reg. to clear ints.
+CS.portInterrupts(0xffff, 0xFFFF, 0X0000);
+CS.portIntPinConfig(1,0);
   
 
   controlArduioInt; // Enable Arduino interrupt control.
