@@ -33,7 +33,6 @@
 #include "ledmgr.h"
 #include "batterymonitor.h"
 #include "UI\UI.h"
-#include "ICM_20948.h" 
 #include <INT_Marshal.h>
 
 
