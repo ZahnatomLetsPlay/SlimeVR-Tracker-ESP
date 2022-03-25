@@ -1,8 +1,7 @@
-
 #include "sensors\sensor.h"
 #include "network\udpclient.h"
 #include "calibration.h"
-
+#include "imc20948sensor.h"
 
 // seconds after previous save (from start) when calibration (DMP Bias) data will be saved to NVS. Increments through the list then stops; to prevent unwelcome eeprom wear.
 int bias_save_periods[] = { 120, 180, 300, 600, 600 }; // 2min + 3min + 5min + 10min + 10min (no more saves after 30min)
@@ -17,6 +16,24 @@ uint8_t poss_addresses[number_i2c_addr] = {0X69}; // 0X68
     #define ENABLE_TAP false
 #endif
 
+void ICM20948Sensor::i2c_scan() { // Basically obsolete but kept for when adding > 2 external 
+    uint8_t error;
+
+    for (uint8_t add_int = 0; add_int < number_i2c_addr; add_int++ )
+    {
+        Serial.printf("Scanning 0x%02X for slave... ", poss_addresses[add_int]);
+        Wire.beginTransmission(poss_addresses[add_int]);
+        error = Wire.endTransmission();
+        if (error == 0){          
+              Serial.print("Found at address. ");       
+            if (poss_addresses[add_int] == 0x69 || poss_addresses[add_int] == 0x68){
+                  Serial.println("\t Address is ICM.");
+                ICM_address = poss_addresses[add_int];
+                ICM_found = true; 
+            }
+        }
+    }
+}
 
 void ICM20948Sensor::save_bias(bool repeat) { 
 #if ESP32 && defined(SAVE_BIAS)
@@ -100,7 +117,7 @@ void ICM20948Sensor::save_bias(bool repeat) {
 void ICM20948Sensor::setupICM20948(bool auxiliary, uint8_t addr) {
     this->addr = addr;
     this->auxiliary = auxiliary;
-    this->sensorOffset = {Quat(Vector3(0, 0, 1), ((int)auxiliary) == 0 ? IMU_ROTATION : IMU_ROTATION)};
+    this->sensorOffset = {Quat(Vector3(0, 0, 1), ((int)auxiliary) == 0 ? IMU_ROTATION : SECOND_IMU_ROTATION)};
     this->tapDetector = TapDetector(3, [](){}); // Tripple tap
 
     icmSettings = {
@@ -260,7 +277,7 @@ void ICM20948Sensor::motionLoop() {
 void ICM20948Sensor::sendData() { 
     if (newData) {
         newData = false;
-        //sendRotationData(&quaternion, DATA_TYPE_NORMAL, 0, auxiliary, PACKET_ROTATION_DATA);
+        sendRotationData(&quaternion, DATA_TYPE_NORMAL, 0, auxiliary, PACKET_ROTATION_DATA);
 #ifdef FULL_DEBUG
             //Serial.print("[DBG] Quaternion: ");
             //Serial.print(quaternion.x);
@@ -274,7 +291,7 @@ void ICM20948Sensor::sendData() {
     }
     
     if (newTap) {
-      //  sendByte(1, auxiliary, PACKET_TAP);
+        sendByte(1, auxiliary, PACKET_TAP);
         newTap = false;
     }
 }

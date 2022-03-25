@@ -33,14 +33,10 @@
 #include "ledmgr.h"
 #include "batterymonitor.h"
 #include "UI\UI.h"
-#include <INT_Marshal.h>
-
 
 
 SensorFactory sensors {};
 int sensorToCalibrate = -1;
-uint16_t IMU_INT_Index;
-bool IMU_INT_Event = false;
 bool blinking = false;
 unsigned long blinkStart = 0;
 unsigned long loopTime = 0;
@@ -48,41 +44,10 @@ unsigned long last_rssi_sample = 0;
 bool secondImuActive = false;
 BatteryMonitor battery;
 
-INT_Marshal CS; 
-
-#define INTPIN 4
-#define controlArduioInt attachInterrupt(digitalPinToInterrupt(INTPIN),isr,FALLING)
-
-void isr(void)
-{
-   noInterrupts();
-   detachInterrupt(digitalPinToInterrupt(INTPIN));
-   interrupts(); 
-   IMU_INT_Event = true;
-   IMU_INT_Index =  CS.getIntF();
-   CS.portCaptureRead();
-   controlArduioInt;  
-}
-
-
-
 void setup()
 {
 
 pinMode(MUX_Reset_Pin, INPUT);
- 
-CS.initialize();
-
-CS.portMode( 0xffff);   // Chip pins on port to inputs.
-CS.portPullup( 0xffff); // All pins on port to pullup.
-CS.portInterrupts(0x0000, 0xFFFF, 0X0000);  //
-CS.portCaptureRead(); // Read capture reg. to clear ints.
-CS.portInterrupts(0xffff, 0xFFFF, 0X0000);
-CS.portIntPinConfig(1,0);
-  
-
-  controlArduioInt; // Enable Arduino interrupt control.
-
 
 UI::Setup();
 UI::DrawSplash();

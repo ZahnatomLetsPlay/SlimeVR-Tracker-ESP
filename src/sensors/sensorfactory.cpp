@@ -22,6 +22,8 @@
 */
 #include <i2cscan.h>
 #include "sensorfactory.h"
+#include "mpu6050sensor.h"
+
 
 SensorFactory::SensorFactory()
 {
@@ -55,7 +57,7 @@ void SensorFactory::create()
         }
         else
         {
-            this->IMUs[SensorCount] = new ICM20948Sensor();
+            this->IMUs[SensorCount] = new MPU6050Sensor();
             Serial.print("IMU Address  : 0x");
             Serial.print(first_addr, HEX);
             ;
