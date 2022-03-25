@@ -1,7 +1,6 @@
 #include "sensors\sensor.h"
 #include "network\udpclient.h"
 #include "calibration.h"
-#include "imc20948sensor.h"
 
 // seconds after previous save (from start) when calibration (DMP Bias) data will be saved to NVS. Increments through the list then stops; to prevent unwelcome eeprom wear.
 int bias_save_periods[] = { 120, 180, 300, 600, 600 }; // 2min + 3min + 5min + 10min + 10min (no more saves after 30min)
@@ -117,7 +116,7 @@ void ICM20948Sensor::save_bias(bool repeat) {
 void ICM20948Sensor::setupICM20948(bool auxiliary, uint8_t addr) {
     this->addr = addr;
     this->auxiliary = auxiliary;
-    this->sensorOffset = {Quat(Vector3(0, 0, 1), ((int)auxiliary) == 0 ? IMU_ROTATION : SECOND_IMU_ROTATION)};
+    this->sensorOffset = {Quat(Vector3(0, 0, 1),  IMU_ROTATION )};
     this->tapDetector = TapDetector(3, [](){}); // Tripple tap
 
     icmSettings = {
@@ -274,27 +273,6 @@ void ICM20948Sensor::motionLoop() {
     }
 }
 
-void ICM20948Sensor::sendData() { 
-    if (newData) {
-        newData = false;
-        sendRotationData(&quaternion, DATA_TYPE_NORMAL, 0, auxiliary, PACKET_ROTATION_DATA);
-#ifdef FULL_DEBUG
-            //Serial.print("[DBG] Quaternion: ");
-            //Serial.print(quaternion.x);
-            //Serial.print(",");
-            //Serial.print(quaternion.y);
-            //Serial.print(",");
-            //Serial.print(quaternion.z);
-            //Serial.print(",");
-            //Serial.println(quaternion.w);
-#endif
-    }
-    
-    if (newTap) {
-        sendByte(1, auxiliary, PACKET_TAP);
-        newTap = false;
-    }
-}
 
 void ICM20948Sensor::startCalibration(int calibrationType) {
     // 20948 does continuous calibration and no need to use for ESP32 as it auto saves bias values
