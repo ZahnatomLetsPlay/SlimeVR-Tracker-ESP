@@ -22,7 +22,6 @@
 */
 
 #include "udpclient.h"
-#include "ledmgr.h"
 #include "packets.h"
 
 #define TIMEOUT 3000UL
@@ -376,10 +375,6 @@ void ServerConnection::connect()
                 port = Udp.remotePort();
                 lastPacketMs = now;
                 connected = true;
-                LEDManager::unsetLedStatus(LED_STATUS_SERVER_CONNECTING);
-#ifndef SEND_UPDATES_UNCONNECTED
-                LEDManager::off(LOADING_LED);
-#endif
                 Serial.printf("[Handshake] Handshake successful, server is %s:%d\n", Udp.remoteIP().toString().c_str(), + Udp.remotePort());
                 UI::SetMessage(6);
                 return;
@@ -398,22 +393,12 @@ void ServerConnection::connect()
         Serial.println("Looking for the server...");
         UI::SetMessage(4);
         Network::sendHandshake();
-#ifndef SEND_UPDATES_UNCONNECTED
-        LEDManager::on(LOADING_LED);
-#endif
     }
-#ifndef SEND_UPDATES_UNCONNECTED
-    else if(lastConnectionAttemptMs + 20 < now)
-    {
-        LEDManager::off(LOADING_LED);
-    }
-#endif
 }
 
 void ServerConnection::resetConnection() {
     Udp.begin(port);
     connected = false;
-    LEDManager::setLedStatus(LED_STATUS_SERVER_CONNECTING);
 }
 
 void ServerConnection::update(Sensor *Sensors[]) 
@@ -472,7 +457,6 @@ void ServerConnection::update(Sensor *Sensors[])
         //}
         if(lastPacketMs + TIMEOUT < millis())
         {
-            LEDManager::setLedStatus(LED_STATUS_SERVER_CONNECTING);
             connected = false;
             for (int SensorCount = 0;SensorCount < IMUCount;SensorCount ++)
             {

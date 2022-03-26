@@ -118,12 +118,8 @@ void BatteryMonitor::Loop()
                     {
                         #if defined(BATTERY_LOW_VOLTAGE_DEEP_SLEEP) && BATTERY_LOW_VOLTAGE_DEEP_SLEEP
                             ESP.deepSleep(0);
-                        #else
-                            LEDManager::setLedStatus(LED_STATUS_LOW_BATTERY);
                         #endif
-                    } else {
-                        LEDManager::unsetLedStatus(LED_STATUS_LOW_BATTERY);
-                    }
+                    } 
                 #endif
             }
         }

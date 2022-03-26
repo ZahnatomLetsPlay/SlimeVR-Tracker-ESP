@@ -30,7 +30,6 @@
 #include "credentials.h"
 #include <i2cscan.h>
 #include "serial/serialcommands.h"
-#include "ledmgr.h"
 #include "batterymonitor.h"
 #include "UI\UI.h"
 
@@ -47,7 +46,8 @@ BatteryMonitor battery;
 void setup()
 {
 
-pinMode(MUX_Reset_Pin, INPUT);
+pinMode(INT_PIN_1, INPUT);
+pinMode(INT_PIN_2, INPUT);
 
 UI::Setup();
 UI::DrawSplash();
@@ -58,10 +58,10 @@ UI::SetMessage(1);
 
 
 #if ENABLE_LEDS
+
+
     pinMode(LOADING_LED, OUTPUT);
     pinMode(CALIBRATING_LED, OUTPUT);
-    LEDManager::off(CALIBRATING_LED);
-    LEDManager::on(LOADING_LED);
 #endif
 
     Serial.begin(serialBaudRate);
@@ -90,7 +90,6 @@ UI::SetMessage(1);
     Network::setUp();
     OTA::otaSetup(otaPassword);
     battery.Setup();
-    LEDManager::off(LOADING_LED);
     loopTime = micros();
 }
 
@@ -98,7 +97,6 @@ UI::SetMessage(1);
 
 void loop()
 {
-    LEDManager::ledStatusUpdate();
     SerialCommands::update();
     OTA::otaUpdate();
     Network::update(sensors.IMUs);

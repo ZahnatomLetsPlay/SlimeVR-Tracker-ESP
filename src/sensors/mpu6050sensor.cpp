@@ -34,7 +34,6 @@
 #include <i2cscan.h>
 #include "calibration.h"
 #include "configuration.h"
-#include "ledmgr.h"
 
 void MPU6050Sensor::motionSetup()
 {
@@ -64,8 +63,6 @@ void MPU6050Sensor::motionSetup()
         imu.CalibrateAccel(6);
         imu.PrintActiveOffsets();
 #endif // IMU_MPU6050_RUNTIME_CALIBRATION
-
-        LEDManager::pattern(LOADING_LED, 50, 50, 5);
 
         // turn on the DMP, now that it's ready
         Serial.println(F("[NOTICE] Enabling DMP..."));
@@ -115,7 +112,6 @@ void MPU6050Sensor::motionLoop()
 }
 
 void MPU6050Sensor::startCalibration(int calibrationType) {
-    LEDManager::on(CALIBRATING_LED);
 #ifdef IMU_MPU6050_RUNTIME_CALIBRATION
     Serial.println("MPU is using automatic runtime calibration. Place down the device and it should automatically calibrate after a few seconds");
 
@@ -129,7 +125,6 @@ void MPU6050Sensor::startCalibration(int calibrationType) {
         Network::sendCalibrationFinished(CALIBRATION_TYPE_INTERNAL_ACCEL, 0);
         break;
     }
-    LEDManager::off(CALIBRATING_LED);
 
 #else //!IMU_MPU6050_RUNTIME_CALIBRATION
     Serial.println("Put down the device and wait for baseline gyro reading calibration");

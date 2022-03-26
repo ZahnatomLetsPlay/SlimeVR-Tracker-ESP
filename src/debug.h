@@ -37,9 +37,13 @@
 #define STATUS_PRINT_INTERVAL 15000
 #define ENABLE_LEDS true
 
-#define LOADING_LED D6
-#define CALIBRATING_LED D7
-#define STATUS_LED D8
+#define LOADING_LED D7
+#define CALIBRATING_LED D8
+#define STATUS_LED D4
+
+#define INT_PIN_1 D5
+#define INT_PIN_2 D6
+
 
 // Determines how often we sample and send data
 #define samplingRateInMillis 12
