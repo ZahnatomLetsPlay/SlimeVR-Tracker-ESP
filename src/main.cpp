@@ -32,6 +32,7 @@
 #include "serial/serialcommands.h"
 #include "batterymonitor.h"
 #include "UI\UI.h"
+#include <INT_Marshal/DFRobot_MCP23017.h>
 
 
 
@@ -44,7 +45,40 @@ unsigned long last_rssi_sample = 0;
 bool secondImuActive = false;
 BatteryMonitor battery;
 
+DFRobot_MCP23017 INT_Marshal;
 
+
+bool intFlagA = false;//INTA interrupt sign
+bool intFlagB = false;//INTB interrupt sign
+
+
+char * int2bin(uint8_t x)
+{
+  static char buffer[9];
+  for (int i=0; i<8; i++) buffer[7-i] = '0' + ((x & (1 << i)) > 0);
+  buffer[8] ='\0';
+  return buffer;
+}
+
+
+void IMU_Int_Service_A(int Index)
+{
+  String description = INT_Marshal.pinDescription(Index);
+  Serial.print(description);Serial.println("Port A Interruption occurs!");
+}
+
+void IMU_Int_Service_B(int Index)
+{
+  String description = INT_Marshal.pinDescription(Index);
+  Serial.print(description);Serial.println("Port B Interruption occurs!");
+}
+
+IRAM_ATTR void notifyA(){
+  intFlagA = true;
+}
+IRAM_ATTR void notifyB(){
+  intFlagB = true;
+}
 
 void setup()
 {
@@ -53,6 +87,13 @@ void setup()
     pinMode(INT_PIN_2, INPUT_PULLUP);
 
 
+    INT_Marshal.begin();
+
+    INT_Marshal.pinModeInterrupt(INT_Marshal.eGPA,INT_Marshal.eChangeLevel,IMU_Int_Service_A);
+    INT_Marshal.pinModeInterrupt(INT_Marshal.eGPB,INT_Marshal.eChangeLevel,IMU_Int_Service_B);
+
+attachInterrupt(INT_PIN_1,notifyA,RISING);
+attachInterrupt(INT_PIN_2,notifyB,RISING);
 
 
 UI::Setup();
@@ -91,8 +132,19 @@ UI::SetMessage(1);
 void loop()
 {
 
-//Serial.println(int2bin(INT_Handler.digitalRead(INT_Handler.eGPA)));
+  if(intFlagA)
+  {
+    intFlagA = false;
+    INT_Marshal.pollInterrupts(INT_Marshal.eGPIOA);
+  }
 
+  if(intFlagB)
+  {
+    intFlagB = false;
+    INT_Marshal.pollInterrupts(INT_Marshal.eGPIOB);
+  }
+
+   
     SerialCommands::update();
     OTA::otaUpdate();
     Network::update(sensors.IMUs);
@@ -108,10 +160,3 @@ void loop()
 }
 
 
-char * int2bin(uint8_t x)
-{
-  static char buffer[9];
-  for (int i=0; i<8; i++) buffer[7-i] = '0' + ((x & (1 << i)) > 0);
-  buffer[8] ='\0';
-  return buffer;
-}
