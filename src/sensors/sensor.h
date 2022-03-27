@@ -40,7 +40,7 @@ class Sensor
 public:
     Sensor(){Connected = true;};
     virtual ~Sensor(){};
-    void setupSensor(uint8_t expectedSensorType, uint8_t sensorId, uint8_t addr, uint8_t intPin);
+    void setupSensor(uint8_t expectedSensorType, uint8_t sensorId, uint8_t addr, uint8_t intPin, uint8_t sensorType); 
     virtual void motionSetup(){};
     virtual void motionLoop(){};
     virtual void sendData();
@@ -58,6 +58,7 @@ public:
     };
 
     bool Connected = true;
+    bool Int_Triggerd = false;
 
 protected:
     uint8_t addr = 0;

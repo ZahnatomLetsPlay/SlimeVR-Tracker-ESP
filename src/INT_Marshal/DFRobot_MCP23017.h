@@ -25,7 +25,7 @@
 #define DBG(...)
 #define DBGI(...)
 
-typedef void(*MCP23017_INT_CB)(int index);
+typedef void(*MCP23017_INT_CB)(uint8_t index);
 
 class DFRobot_MCP23017
 

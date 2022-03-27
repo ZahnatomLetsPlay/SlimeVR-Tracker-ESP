@@ -39,6 +39,7 @@ public:
     void motionLoop();
     void sendData();
     void startCalibration(int sensorId, int calibrationType);
+    void INT_Triggered(uint8_t sensorId);
     void SetIMU(uint8_t bus);
     Sensor *IMUs[IMUCount];
 };

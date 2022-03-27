@@ -64,8 +64,13 @@ void SensorFactory::create()
             Serial.print(" Found on MUX Channel : ");
             Serial.println(SensorCount);
         }
-        this->IMUs[SensorCount]->setupSensor(IMU, SensorCount, first_addr, PIN_IMU_INT);
+        this->IMUs[SensorCount]->setupSensor(IMU, SensorCount, first_addr, PIN_IMU_INT,IMU_MPU6050);
     }
+}
+
+void  SensorFactory::INT_Triggered(uint8_t sensorId)
+{
+    IMUs[sensorId]->Int_Triggerd = true;
 }
 
 void SensorFactory::motionSetup()
@@ -91,6 +96,7 @@ void SensorFactory::motionLoop()
     {
         if (IMUs[SensorCount]->Connected)
         {
+            if (IMUs[SensorCount]->Int_Triggerd || (IMUs[SensorCount]->getSensorType() == IMU_MPU6050))
             this->SetIMU(SensorCount);
             IMUs[SensorCount]->motionLoop();
         }

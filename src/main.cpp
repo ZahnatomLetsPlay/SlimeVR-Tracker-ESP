@@ -61,16 +61,17 @@ char * int2bin(uint8_t x)
 }
 
 
-void IMU_Int_Service_A(int Index)
+void IMU_Int_Service_A(uint8_t Index)
 {
   String description = INT_Marshal.pinDescription(Index);
   Serial.print(description);Serial.println("Port A Interruption occurs!");
 }
 
-void IMU_Int_Service_B(int Index)
+void IMU_Int_Service_B(uint8_t Index)
 {
   String description = INT_Marshal.pinDescription(Index);
   Serial.print(description);Serial.println("Port B Interruption occurs!");
+  sensors.INT_Triggered(Index);
 }
 
 IRAM_ATTR void notifyA(){
@@ -101,10 +102,6 @@ UI::DrawSplash();
 delay(1500);
 UI::MainUIFrame();
 UI::SetMessage(1);
-
-
-
-
 
     Serial.begin(serialBaudRate);
     SerialCommands::setUp();

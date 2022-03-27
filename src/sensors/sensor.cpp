@@ -25,13 +25,15 @@
 #include <i2cscan.h>
 #include "calibration.h"
 
-void Sensor::setupSensor(uint8_t expectedSensorType, uint8_t sensorId, uint8_t addr, uint8_t intPin) {
+void Sensor::setupSensor(uint8_t expectedSensorType, uint8_t sensorId, uint8_t addr, uint8_t intPin, uint8_t sensorType) 
+{
     this->sensorType = expectedSensorType;
     this->addr = addr;
     this->intPin = intPin;
     this->sensorId = sensorId;
     this->sensorOffset = {Quat(Vector3(0, 0, 1),IMU_ROTATION)};
     this->working = true;
+    this->sensorType = sensorType;
 }
 
 
