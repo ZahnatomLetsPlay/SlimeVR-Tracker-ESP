@@ -116,7 +116,7 @@ public:
    * @n 0  0  1  0  | 0  0  0  1    0x21
    * @n 0  0  1  0  | 0  0  0  0    0x20
    */
-  DFRobot_MCP23017(TwoWire &wire = Wire, uint8_t addr = 0x27);
+  DFRobot_MCP23017(TwoWire &wire = Wire, uint8_t addr = 0x20);
   ~DFRobot_MCP23017();
 
   /**

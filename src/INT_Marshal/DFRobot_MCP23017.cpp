@@ -134,6 +134,10 @@ int DFRobot_MCP23017::pinMode(ePin_t pin, uint8_t mode)
       case INPUT:
           setInput(reg, _pin%8, flag);
           break;
+      case INPUT_PULLUP:
+          setInput(reg, _pin%8, flag);
+          setPullUp(reg1, _pin%8, flag);
+          break;
       case OUTPUT:
           setOutput(reg, _pin%8, flag);
           break;
@@ -274,7 +278,7 @@ void DFRobot_MCP23017::pinModeInterrupt(ePin_t pin, eInterruptMode_t mode, MCP23
       DBGI("null pointer!");
       return ;
   }
-  pinMode(pin, INPUT);
+  pinMode(pin, INPUT_PULLUP);
   interruptConfig();
   _cbs[_pin].cb = cb;
   _cbs[_pin].mode = mode;
