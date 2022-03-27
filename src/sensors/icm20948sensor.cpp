@@ -1,6 +1,7 @@
 #include "sensors\sensor.h"
 #include "network\udpclient.h"
 #include "calibration.h"
+#include "sensors\icm20948sensor.h"
 
 // seconds after previous save (from start) when calibration (DMP Bias) data will be saved to NVS. Increments through the list then stops; to prevent unwelcome eeprom wear.
 int bias_save_periods[] = { 120, 180, 300, 600, 600 }; // 2min + 3min + 5min + 10min + 10min (no more saves after 30min)

@@ -1206,20 +1206,6 @@ class Icm20948 {
 
 	void INV_EXPORT inv_icm20948_transport_init(struct inv_icm20948 * s);
 
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
 	void INV_EXPORT inv_icm20948_sleep_100us(unsigned long nHowMany100MicroSecondsToSleep);
 
 	long INV_EXPORT inv_icm20948_get_tick_count(void);

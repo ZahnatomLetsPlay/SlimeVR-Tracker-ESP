@@ -28,11 +28,10 @@
 #include "debug.h"
 #include "defines.h"
 #include "UI\UI.h"
+//#include "INT_Marshal/DFRobot_MCP23017.h"
 
 // MUX paramaters
 #define IMUCount 8
-#define MUX_Reset_Pin D0
-
 
 #ifndef BATTERY_MONITOR
 #define BATTERY_MONITOR BAT_INTERNAL
@@ -40,3 +39,5 @@
 
 
 #endif // SLIMEVR_GLOBALS_H_
+
+

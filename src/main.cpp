@@ -34,6 +34,7 @@
 #include "UI\UI.h"
 
 
+
 SensorFactory sensors {};
 int sensorToCalibrate = -1;
 bool blinking = false;
@@ -43,11 +44,16 @@ unsigned long last_rssi_sample = 0;
 bool secondImuActive = false;
 BatteryMonitor battery;
 
+
+
 void setup()
 {
 
-pinMode(INT_PIN_1, INPUT);
-pinMode(INT_PIN_2, INPUT);
+    pinMode(INT_PIN_1, INPUT_PULLUP);
+    pinMode(INT_PIN_2, INPUT_PULLUP);
+
+
+
 
 UI::Setup();
 UI::DrawSplash();
@@ -57,31 +63,20 @@ UI::SetMessage(1);
 
 
 
-#if ENABLE_LEDS
 
-
-    pinMode(LOADING_LED, OUTPUT);
-    pinMode(CALIBRATING_LED, OUTPUT);
-#endif
 
     Serial.begin(serialBaudRate);
     SerialCommands::setUp();
     Serial.println();
     Serial.println();
     Serial.println();
-#if IMU == IMU_MPU6500 || IMU == IMU_MPU6050 || IMU == IMU_MPU9250
     I2CSCAN::clearBus(PIN_IMU_SDA, PIN_IMU_SCL); // Make sure the bus isn't suck when reseting ESP without powering it down
-    // Do it only for MPU, cause reaction of BNO to this is not investigated yet
-#endif
-    // join I2C bus
     Wire.begin(PIN_IMU_SDA, PIN_IMU_SCL);
-#ifdef ESP8266
     Wire.setClockStretchLimit(150000L); // Default stretch limit 150mS
-#endif
     Wire.setClock(I2C_SPEED);
 
     getConfigPtr();
-    // Wait for IMU to boot
+
     delay(500);
     
     sensors.create();
@@ -93,54 +88,30 @@ UI::SetMessage(1);
     loopTime = micros();
 }
 
-
-
 void loop()
 {
+
+//Serial.println(int2bin(INT_Handler.digitalRead(INT_Handler.eGPA)));
+
     SerialCommands::update();
     OTA::otaUpdate();
     Network::update(sensors.IMUs);
-#ifndef UPDATE_IMU_UNCONNECTED
-    if (isConnected())
-    {
-#endif
-        sensors.motionLoop();
-#ifndef UPDATE_IMU_UNCONNECTED
-    }
-#endif
-    // Send updates
-#ifndef SEND_UPDATES_UNCONNECTED
-    if (isConnected())
-    {
-#endif
-        sensors.sendData();
-#ifndef SEND_UPDATES_UNCONNECTED
-    }
-#endif
+    sensors.motionLoop();
+    sensors.sendData();
     battery.Loop();
-
-#ifdef TARGET_LOOPTIME_MICROS
-    auto elapsed = (micros() - loopTime);
-    if (elapsed < TARGET_LOOPTIME_MICROS)
+    if(micros() - last_rssi_sample >= 2000) 
     {
-        auto sleepus = TARGET_LOOPTIME_MICROS - elapsed - 100;//µs to sleep
-        auto sleepms = sleepus / 1000;//ms to sleep
-        if (sleepms) // if >= 1 ms
-        {
-            delay(sleepms); // sleep ms = save power
-            sleepus -= sleepms * 1000;
-        }
-        if (sleepus > 100)
-        {
-            delayMicroseconds(sleepus);
-        }
-    }
-    loopTime = micros();
-#endif
-    // TODO Move to WiFi handler
-    if(micros() - last_rssi_sample >= 2000) {
         last_rssi_sample = micros();
         uint8_t signalStrength = WiFi.RSSI();
         Network::sendSignalStrength(signalStrength);
     }
+}
+
+
+char * int2bin(uint8_t x)
+{
+  static char buffer[9];
+  for (int i=0; i<8; i++) buffer[7-i] = '0' + ((x & (1 << i)) > 0);
+  buffer[8] ='\0';
+  return buffer;
 }
