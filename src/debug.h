@@ -41,8 +41,8 @@
 #define CALIBRATING_LED D8
 #define STATUS_LED D4
 
-#define INT_PIN_1 D5
-#define INT_PIN_2 D6
+#define INT_PIN_1 D6
+#define INT_PIN_2 D5
 
 
 // Determines how often we sample and send data
