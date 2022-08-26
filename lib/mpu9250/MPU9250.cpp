@@ -3643,7 +3643,7 @@ int8_t MPU9250_Base::GetCurrentFIFOPacket(uint8_t* data, uint8_t length)
         // Serial.printf(" Length: %d", length);
         // Serial.printf(" Fifocounter: ");
 
-        Serial.println(fifoCounter);
+        // Serial.println(fifoCounter);
         // Serial.printf(" 8");
         getFIFOBytes(fifoBuf, fifoCounter);
         // Serial.printf(" 9");

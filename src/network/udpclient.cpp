@@ -23,6 +23,7 @@
 
 #include "udpclient.h"
 #include "packets.h"
+#include "GlobalVars.h"
 
 #define TIMEOUT 3000UL
 
@@ -373,8 +374,10 @@ void ServerConnection::connect()
                 // Starting on 14th byte (packet number, 12 bytes greetings, null-terminator) we can transfer SlimeVR handshake data
                 host = Udp.remoteIP();
                 port = Udp.remotePort();
+                ledManager.off();
                 lastPacketMs = now;
                 connected = true;
+                statusManager.setStatus(SlimeVR::Status::SERVER_CONNECTING, false);
                 Serial.printf("[Handshake] Handshake successful, server is %s:%d\n", Udp.remoteIP().toString().c_str(), + Udp.remotePort());
                 UI::SetMessage(6);
                 return;
@@ -399,6 +402,8 @@ void ServerConnection::connect()
 void ServerConnection::resetConnection() {
     Udp.begin(port);
     connected = false;
+
+    statusManager.setStatus(SlimeVR::Status::SERVER_CONNECTING, true);
 }
 
 void ServerConnection::update(Sensor *Sensors[]) 
@@ -457,6 +462,8 @@ void ServerConnection::update(Sensor *Sensors[])
         //}
         if(lastPacketMs + TIMEOUT < millis())
         {
+            statusManager.setStatus(SlimeVR::Status::SERVER_CONNECTING, true);
+            
             connected = false;
             for (int SensorCount = 0;SensorCount < IMUCount;SensorCount ++)
             {

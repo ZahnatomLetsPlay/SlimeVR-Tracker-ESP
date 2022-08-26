@@ -21,6 +21,7 @@
     THE SOFTWARE.
 */
 #include "batterymonitor.h"
+#include "GlobalVars.h"
 
 #if BATTERY_MONITOR == BAT_INTERNAL || BATTERY_MONITOR == BAT_INTERNAL_MCP3021
 ADC_MODE(ADC_VCC);
@@ -114,12 +115,16 @@ void BatteryMonitor::Loop()
                     level = 0;
                 Network::sendBatteryLevel(voltage, level);
                 #ifdef BATTERY_LOW_POWER_VOLTAGE
-                    if (voltage < (float)BATTERY_LOW_POWER_VOLTAGE)
+                    if (voltage < (float)BATTERY_LOW_POWER_VOLTAGE && voltage > (float) 3.000)
                     {
                         #if defined(BATTERY_LOW_VOLTAGE_DEEP_SLEEP) && BATTERY_LOW_VOLTAGE_DEEP_SLEEP
                             ESP.deepSleep(0);
+                        #else
+                            statusManager.setStatus(SlimeVR::Status::LOW_BATTERY, true);    
                         #endif
-                    } 
+                    }  else {
+                        statusManager.setStatus(SlimeVR::Status::LOW_BATTERY, false);
+                    }
                 #endif
             }
         }

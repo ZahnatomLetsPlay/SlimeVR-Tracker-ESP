@@ -22,6 +22,7 @@
 */
 #include "globals.h"
 #include "network.h"
+#include "GlobalVars.h"
 #if !ESP8266
 #include "esp_wifi.h"
 #endif
@@ -102,6 +103,7 @@ void WiFiNetwork::setUp() {
 
 void onConnected() {
     WiFiNetwork::stopProvisioning();
+    statusManager.setStatus(SlimeVR::Status::WIFI_CONNECTING, false);
     isWifiConnected = true;
     hadWifi = true;
     Serial.printf("[NOTICE] WiFi: Connected successfully to SSID '%s', ip address %s\n", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
@@ -116,6 +118,7 @@ void WiFiNetwork::upkeep() {
             Serial.printf("[NOTICE] WiFi: Connection to WiFi lost, reconnecting...");
             isWifiConnected = false;
         }
+        statusManager.setStatus(SlimeVR::Status::WIFI_CONNECTING, true);
         reportWifiError();
         if(wifiConnectionTimeout + 11000 < millis()) {
             switch(wifiState) {

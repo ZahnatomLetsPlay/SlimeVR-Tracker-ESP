@@ -50,6 +50,8 @@
   #define PIN_IMU_INT D5
   #define PIN_IMU_INT_2 D6
   #define PIN_BATTERY_LEVEL A0
+  #define LED_PIN 2
+  #define LED_INVERTED true
 #elif BOARD == BOARD_ESP01
   #define PIN_IMU_SDA 2
   #define PIN_IMU_SCL 0

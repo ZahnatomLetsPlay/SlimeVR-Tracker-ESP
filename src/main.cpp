@@ -33,8 +33,12 @@
 #include "batterymonitor.h"
 #include "UI\UI.h"
 #include <INT_Marshal/DFRobot_MCP23017.h>
+#include "LEDManager.h"
+#include "status/StatusManager.h"
 
 SlimeVR::Configuration::Configuration configuration; // thanks Emojikage#3095 for telling me this
+SlimeVR::LEDManager ledManager(LED_PIN);
+SlimeVR::Status::StatusManager statusManager;
 
 SensorFactory sensors{};
 int sensorToCalibrate = -1;
@@ -97,6 +101,9 @@ void setup()
   attachInterrupt(INT_PIN_1, notifyA, RISING);
   attachInterrupt(INT_PIN_2, notifyB, RISING);
 
+  statusManager.setStatus(SlimeVR::Status::LOADING, true);
+  ledManager.setup();
+
   UI::Setup();
   UI::DrawSplash();
   delay(1500);
@@ -124,6 +131,9 @@ void setup()
   OTA::otaSetup(otaPassword);
   battery.Setup();
   loopTime = micros();
+
+  statusManager.setStatus(SlimeVR::Status::LOADING, false);
+
 }
 
 void loop()
@@ -147,6 +157,7 @@ void loop()
   sensors.motionLoop(); // culprit right now
   sensors.sendData();
   battery.Loop();
+  ledManager.update();
   if (millis() - last_rssi_sample >= 2000)
   {
     last_rssi_sample = millis();
