@@ -11,7 +11,7 @@ Firmware configuration is located in the `defines.h` file. For more information 
 ## Compatibility
 
 The following IMUs and their corresponding `IMU` values are supported by the firmware:
-* BNO085 & BNO086 (IMU_BNO085)
+~~* BNO085 & BNO086 (IMU_BNO085)
   * Using any fusion in internal DMP. Best results with ARVR Stabilized Game Rotation Vector or ARVR Stabilized Rotation Vector if in good magnetic environment.
 * BNO080 (IMU_BNO080)
   * Using any fusion in internal DMP. Doesn't have BNO085's ARVR stabilization, but still gives good results.
@@ -22,7 +22,12 @@ The following IMUs and their corresponding `IMU` values are supported by the fir
   * NOTE: Currently can only be used as MPU-6050 without magnetometer. To use it as MPU-6050, specify `IMU_MPU6050` in your `defines.h`.
 * MPU-6500 (IMU_MPU6500) & MPU-6050 (IMU_MPU6050)
   * Using internal DMP to fuse Gyroscope and Accelerometer. Can drift substantially.
+  * NOTE: Currently the MPU will auto calibrate when powered on. You *must* place it on the ground and *DO NOT* move it until calibration is complete (for a few seconds). **LED on the ESP will blink 5 times after calibration is over.**~~
+ * MPU-6500 and MPU-6050 (IMU_MPU6500 and IMU_MPU6050)
+  * Using internal DMP to fuse Gyroscope and Accelerometer. Can drift substantially.
   * NOTE: Currently the MPU will auto calibrate when powered on. You *must* place it on the ground and *DO NOT* move it until calibration is complete (for a few seconds). **LED on the ESP will blink 5 times after calibration is over.**
+ * MPU-6050 + QMC-5883L(IMU_MPU9250) --- WORK IN PROGRESS 
+  * essentially an MPU-9250
 
 Firmware can work with both ESP8266 and ESP32. Please edit defines.h and set your pinout properly according to how you connected the IMU.
 
