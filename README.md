@@ -16,7 +16,7 @@ The following IMUs and their corresponding `IMU` values are supported by the fir
   * Using internal DMP to fuse Gyroscope and Accelerometer. Can drift substantially.
   * NOTE: Currently the MPU will auto calibrate when powered on. You *must* place it on the ground and *DO NOT* move it until calibration is complete (for a few seconds). **LED on the ESP will blink 5 times after calibration is over.**
  * MPU-6050 + QMC-5883L(IMU_MPU9250) --- WORK IN PROGRESS 
-  * essentially an MPU-9250
+   * essentially an MPU-9250
 
 Firmware can work with both ESP8266 and ESP32. Please edit defines.h and set your pinout properly according to how you connected the IMU.
 
