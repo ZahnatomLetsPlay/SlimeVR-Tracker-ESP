@@ -20,31 +20,13 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
-#ifndef SLIMEVR_GLOBALS_H_
-#define SLIMEVR_GLOBALS_H_
 
-#include <Arduino.h>
-#include "consts.h"
-#include "debug.h"
-#include "defines.h"
-#include "UI\UI.h"
-//#include "INT_Marshal/DFRobot_MCP23017.h"
+#ifndef _MAHONY_H_
+#define _MAHONY_H_
 
-// MUX paramaters
-#define IMUCount 1
+#include "helper_3dmath.h"
 
-#ifndef BATTERY_MONITOR
-#define BATTERY_MONITOR BAT_INTERNAL
-#endif
+void mahonyQuaternionUpdate(float q[4], float ax, float ay, float az, float gx, float gy, float gz, float deltat);
+void mahonyQuaternionUpdate(float q[4], float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz, float deltat);
 
-#if LED_INVERTED
-#define LED__ON LOW
-#define LED__OFF HIGH
-#else
-#define LED__ON HIGH
-#define LED__OFF LOW
-#endif
-
-#endif // SLIMEVR_GLOBALS_H_
-
-
+#endif /* _MAHONY_H_ */

@@ -1,6 +1,8 @@
 #include "sensor.h"
 #include <Icm20948.h>
 #include "helper_3dmath.h"
+#include "Arduino-ICM20948.h"
+#include "TapDetector/TapDetector.h"
 
 class ICM20948Sensor : public Sensor {
     public:

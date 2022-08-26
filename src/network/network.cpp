@@ -29,7 +29,9 @@ void Network::setUp() {
 }
 
 void Network::update(Sensor *Sensors[])  {
+    // Serial.printf("Wifi upkeep");
     WiFiNetwork::upkeep();
+    // Serial.println(" Upkept wifi");
     if(WiFiNetwork::isConnected()) {
         if(lastWifiConnected == false) {
             lastWifiConnected = true;

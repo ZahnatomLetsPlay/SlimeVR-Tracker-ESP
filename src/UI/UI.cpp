@@ -2,7 +2,7 @@
 namespace UI
 {
 
-    GyverOLED<SSH1106_128x64> oled;
+    // GyverOLED<SSH1106_128x64> oled;
 
     const unsigned char octopus[] PROGMEM = {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -111,116 +111,115 @@ namespace UI
 
     void Setup()
     {
-        oled.init();
-        oled.clear();
-        oled.update();
+        // oled.init();
+        // oled.clear();
+        // oled.update();
     }
 
     void DrawSplash()
     {
 
-        oled.clear();
-        oled.update();
+        // oled.clear();
+        // oled.update();
 
-        for (uint8 Y = 1; Y < 32; Y += 4)
-        {
-            oled.roundRect((Y * 2), Y, 128 - (Y * 2), 64 - Y, OLED_STROKE);
-            oled.update();
-        }
+        // for (uint8 Y = 1; Y < 32; Y += 4)
+        // {
+        //     oled.roundRect((Y * 2), Y, 128 - (Y * 2), 64 - Y, OLED_STROKE);
+        //     oled.update();
+        // }
 
-        oled.clear();
-        oled.drawBitmap(0, 0, octopus, 128, 64, BITMAP_NORMAL, BUF_ADD);
-        oled.update();
+        // oled.clear();
+        // oled.drawBitmap(0, 0, octopus, 128, 64, BITMAP_NORMAL, BUF_ADD);
+        // oled.update();
     }
 
     void MainUIFrame()
     {
-        oled.clear();
-        oled.update();
+        // oled.clear();
+        // oled.update();
 
-        for (uint8_t X = 0; X < 8; X++)
-        {
-            oled.roundRect(7 + (X * 15), 4, 17 + (X * 15), 14, OLED_STROKE);
-        }
+        // for (uint8_t X = 0; X < 8; X++)
+        // {
+        //     oled.roundRect(7 + (X * 15), 4, 17 + (X * 15), 14, OLED_STROKE);
+        // }
 
-        oled.setCursorXY(18, 25);
-        oled.setScale(2);
-        oled.print("Octo");
+        // oled.setCursorXY(18, 25);
+        // oled.setScale(2);
+        // oled.print("Octo");
 
-        oled.setCursorXY(75, 33);
-        oled.setScale(1);
-        oled.print("Slime");
+        // oled.setCursorXY(75, 33);
+        // oled.setScale(1);
+        // oled.print("Slime");
 
-        DrawFrame();
+        // DrawFrame();
     }
 
     void SetIMUStatus(uint8 imuID, bool Status)
     {
-        oled.roundRect(7 + (imuID * 15), 4, 17 + (imuID * 15), 14, (Status) ? OLED_FILL : OLED_STROKE);
-        oled.update();
+        // oled.roundRect(7 + (imuID * 15), 4, 17 + (imuID * 15), 14, (Status) ? OLED_FILL : OLED_STROKE);
+        // oled.update();
     }
 
     void DrawFrame(void)
     {
-        oled.roundRect(0, 0, 127, 63, OLED_STROKE);
-        oled.line(1, 45, 126, 45, OLED_STROKE);
-        oled.line(1, 20, 126, 20, OLED_STROKE);
-        oled.update(); // обновить. Только для режима с буфером! OLED_BUFFER
+        // oled.roundRect(0, 0, 127, 63, OLED_STROKE);
+        // oled.line(1, 45, 126, 45, OLED_STROKE);
+        // oled.line(1, 20, 126, 20, OLED_STROKE);
+        // oled.update(); // обновить. Только для режима с буфером! OLED_BUFFER
     }
 
     void SetImuCount(uint8 IMUs)
     {
 
-        oled.setScale(1);
-        oled.roundRect(0, 51, 127, 63, OLED_CLEAR);
-        oled.printf("%u  Sensors Active", IMUs);
-        oled.setCursorXY(15, 51);
-        DrawFrame();
-        oled.update();
+        // oled.setScale(1);
+        // oled.roundRect(0, 51, 127, 63, OLED_CLEAR);
+        // oled.printf("%u  Sensors Active", IMUs);
+        // oled.setCursorXY(15, 51);
+        // DrawFrame();
+        // oled.update();
     }
 
     void SetMessage(uint8 MessageID)
     {
+        // oled.setScale(1);
+        // oled.roundRect(0, 51, 127, 63, OLED_CLEAR);
 
-        oled.setScale(1);
-        oled.roundRect(0, 51, 127, 63, OLED_CLEAR);
+        // switch (MessageID)
+        // {
+        // case 1:
+        //     oled.setCursorXY(17, 51);
+        //     oled.print("Scanning Sensors");
+        //     break;
 
-        switch (MessageID)
-        {
-        case 1:
-            oled.setCursorXY(17, 51);
-            oled.print("Scanning Sensors");
-            break;
+        // case 2:
+        //     oled.setCursorXY(10, 51);
+        //     oled.print("Connecting To WIFI");
+        //     break;
 
-        case 2:
-            oled.setCursorXY(10, 51);
-            oled.print("Connecting To WIFI");
-            break;
+        // case 3:
+        //     oled.setCursorXY(15, 51);
+        //     oled.print("WIFI Connect FAILED");
+        //     break;
 
-        case 3:
-            oled.setCursorXY(15, 51);
-            oled.print("WIFI Connect FAILED");
-            break;
+        // case 4:
+        //     oled.setCursorXY(5, 51);
+        //     oled.print("Connecting To Server");
+        //     break;
 
-        case 4:
-            oled.setCursorXY(5, 51);
-            oled.print("Connecting To Server");
-            break;
+        // case 5:
+        //     oled.setCursorXY(38, 51);
+        //     oled.print("Server lost");
+        //     break;
 
-        case 5:
-            oled.setCursorXY(38, 51);
-            oled.print("Server lost");
-            break;
+        // case 6:
+        //     oled.setCursorXY(30, 51);
+        //     oled.print("Sending Data");
+        //     break;
 
-        case 6:
-            oled.setCursorXY(30, 51);
-            oled.print("Sending Data");
-            break;
+        // }
 
-        }
-
-        DrawFrame();
-        oled.update();
+        // DrawFrame();
+        // oled.update();
     }
 
 }

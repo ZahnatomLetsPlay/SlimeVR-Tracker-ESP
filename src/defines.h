@@ -26,7 +26,7 @@
 // ================================================
 
 // Set parameters of IMU and board used
-#define IMU IMU_MPU6500
+#define IMU IMU_MPU9250
 #define BOARD BOARD_WEMOSD1MINI
 #define IMU_ROTATION DEG_180
 

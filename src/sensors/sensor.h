@@ -27,10 +27,13 @@
 #include <Arduino.h>
 #include <quat.h>
 #include <vector3.h>
+#include "configuration/Configuration.h"
 #include "configuration.h"
 #include "globals.h"
-#include <Arduino-ICM20948.h>
-#include "TapDetector/TapDetector.h"
+#include "logging/Logger.h"
+#include "utils.h"
+// #include <Arduino-ICM20948.h>
+// #include "TapDetector/TapDetector.h"
 
 #define DATA_TYPE_NORMAL 1
 #define DATA_TYPE_CORRECTION 2
@@ -38,7 +41,8 @@
 class Sensor
 {
 public:
-    Sensor(){Connected = true;};
+    Sensor() : m_Logger(SlimeVR::Logging::Logger("")) 
+    {Connected = true;};
     virtual ~Sensor(){};
     void setupSensor(uint8_t expectedSensorType, uint8_t sensorId, uint8_t addr, uint8_t intPin, uint8_t sensorType); 
     virtual void motionSetup(){};
@@ -73,6 +77,8 @@ protected:
 
     Quat quaternion{};
     Quat lastQuatSent{};
+
+    SlimeVR::Logging::Logger m_Logger;
 };
 
 class EmptySensor : public Sensor

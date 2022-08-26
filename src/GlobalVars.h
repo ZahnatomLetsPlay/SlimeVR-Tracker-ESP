@@ -1,6 +1,6 @@
 /*
     SlimeVR Code is placed under the MIT license
-    Copyright (c) 2021 Eiren Rain
+    Copyright (c) 2022 TheDevMinerTV
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,16 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
-#ifndef SLIMEVR_GLOBALS_H_
-#define SLIMEVR_GLOBALS_H_
 
-#include <Arduino.h>
-#include "consts.h"
-#include "debug.h"
-#include "defines.h"
-#include "UI\UI.h"
-//#include "INT_Marshal/DFRobot_MCP23017.h"
+#ifndef GLOBALVARS_H
+#define GLOBALVARS_H
 
-// MUX paramaters
-#define IMUCount 1
+#include "LEDManager.h"
+#include "status/StatusManager.h"
+#include "configuration/Configuration.h"
 
-#ifndef BATTERY_MONITOR
-#define BATTERY_MONITOR BAT_INTERNAL
+extern SlimeVR::LEDManager ledManager;
+extern SlimeVR::Status::StatusManager statusManager;
+extern SlimeVR::Configuration::Configuration configuration;
+
 #endif
-
-#if LED_INVERTED
-#define LED__ON LOW
-#define LED__OFF HIGH
-#else
-#define LED__ON HIGH
-#define LED__OFF LOW
-#endif
-
-#endif // SLIMEVR_GLOBALS_H_
-
-
