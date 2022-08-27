@@ -433,7 +433,7 @@ uint8_t MPU9250::dmpInitialize() {
             setIntEnabled(0x12);
 
             DEBUG_PRINTLN(F("Setting sample rate to 200Hz..."));
-            setRate(19); // 1khz / (1 + 4) = 200 Hz
+            setRate(4); // 1khz / (1 + 4) = 200 Hz
 
             DEBUG_PRINTLN(F("Setting clock source to Z Gyro..."));
             setClockSource(MPU9250_CLOCK_PLL_ZGYRO);

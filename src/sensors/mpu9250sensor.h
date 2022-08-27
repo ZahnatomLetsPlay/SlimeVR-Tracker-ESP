@@ -26,6 +26,7 @@
 
 #include "sensor.h"
 #include "logging/Logger.h"
+#include <1efilter.cc>
 
 #include <MPU9250_6Axis_MotionApps_V6_12.h>
 // MPU9250Sensor(uint8_t id, uint8_t address, float rotation) : Sensor("MPU9250Sensor", IMU_MPU9250, id, address, rotation){};
@@ -57,6 +58,15 @@ private:
     // Loop timing globals
     unsigned long now = 0, last = 0; // micros() timers
     float deltat = 0;                // loop time in seconds
+
+    float mag_frequency = 100.f;
+    float beta = 0.02f;
+    float mincutoff = 0.005f;
+    float d_cutoff = 1.0f;
+
+    OneEuroFilter f_mag_x{mag_frequency, mincutoff, beta, d_cutoff};
+    OneEuroFilter f_mag_y{mag_frequency, mincutoff, beta, d_cutoff};
+    OneEuroFilter f_mag_z{mag_frequency, mincutoff, beta, d_cutoff};
 
     SlimeVR::Configuration::MPU9250CalibrationConfig m_Calibration;
 };

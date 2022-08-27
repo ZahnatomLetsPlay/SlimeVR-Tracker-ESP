@@ -103,6 +103,7 @@ void setup()
 
   statusManager.setStatus(SlimeVR::Status::LOADING, true);
   ledManager.setup();
+  configuration.setup();
 
   UI::Setup();
   UI::DrawSplash();

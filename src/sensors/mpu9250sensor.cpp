@@ -33,8 +33,21 @@
 #include "dmpmag.h"
 #endif
 
+// See AK8693 datasheet for sensitivity scales in different mode
+// We use 16-bit continuous reading mode
+#define MAG_LSB_TO_MG_8G .333f
+//#define MAG_UT_LSB_16_BIT 0.15f
+
+// 131 LSB/deg/s = 250 deg/s
+#define TYPICAL_GYRO_SENSITIVITY 131
+// 16384 LSB/G = 2G
+#define TYPICAL_ACCEL_SENSITIVITY 16384.
+
 #if defined(_MAHONY_H_) || defined(_MADGWICK_H_)
-constexpr float gscale = (250. / 32768.0) * (PI / 180.0); // gyro default 250 LSB per d/s -> rad/s
+// Gyro scale conversion steps: LSB/°/s -> °/s -> step/°/s -> step/rad/s
+constexpr float GSCALE = ((32768. / TYPICAL_GYRO_SENSITIVITY) / 32768.) * (PI / 180.0);
+// Accel scale conversion steps: LSB/G -> G -> m/s^2
+constexpr float ASCALE = ((32768. / TYPICAL_ACCEL_SENSITIVITY) / 32768.) * SENSORS_GRAVITY_EARTH;
 #endif
 
 #define MAG_CORR_RATIO 0.02
@@ -50,12 +63,19 @@ void MPU9250Sensor::motionSetup()
 
     m_Logger.info("Connected to MPU9250 (reported device ID 0x%02x) at address 0x%02x", imu.getDeviceID(), addr);
 
+    uint8_t magId = imu.getMagnetometerDeviceID();
+    if (magId != 0xFF) {
+        m_Logger.fatal("Can't connect to QMC5883L (reported ID 0x%02x) at address 0x%02x", magId, 0x0D);
+    } else {
+        m_Logger.info("Connected to QMC5883L (reported ID 0x%02x) at address 0x%02x", magId, 0x0D);
+    }
+
     int16_t ax, ay, az;
 
     // turn on while flip back to calibrate. then, flip again after 5 seconds.
     // TODO: Move calibration invoke after calibrate button on slimeVR server available
     imu.getAcceleration(&ax, &ay, &az);
-    float g_az = (float)az / 16384; // For 2G sensitivity
+    float g_az = (float)az / TYPICAL_ACCEL_SENSITIVITY; // For 2G sensitivity
     if (g_az < -0.75f) {
         ledManager.on();
         m_Logger.info("Flip front to confirm start calibration");
@@ -63,7 +83,7 @@ void MPU9250Sensor::motionSetup()
         ledManager.off();
 
         imu.getAcceleration(&ax, &ay, &az);
-        g_az = (float)az / 16384;
+        g_az = (float)az / TYPICAL_ACCEL_SENSITIVITY;
         if (g_az > 0.75f) {
             m_Logger.debug("Starting calibration...");
             startCalibration(0);
@@ -140,45 +160,32 @@ void MPU9250Sensor::motionLoop()
     if (!dmpReady)
         return;
     Quaternion rawQuat {};
-    // Serial.printf(" 1");
-    if (!imu.GetCurrentFIFOPacket(fifoBuffer, imu.dmpGetFIFOPacketSize())) {
-        // Serial.println(" 1.5");
+    if (!imu.GetCurrentFIFOPacket(fifoBuffer, imu.dmpGetFIFOPacketSize()))
         return;
-    }
-    // Serial.printf(" 2");
     if (imu.dmpGetQuaternion(&rawQuat, fifoBuffer))
         return; // FIFO CORRUPTED
-    // Serial.printf(" 3");
     Quat quat(-rawQuat.y, rawQuat.x, rawQuat.z, rawQuat.w);
-    // Serial.printf(" 4");
 
     getMPUScaled();
-    // Serial.printf(" 5");
 
     if (Mxyz[0] == 0.0f && Mxyz[1] == 0.0f && Mxyz[2] == 0.0f) {
         return;
     }
-    // Serial.printf(" 6");
 
     VectorFloat grav;
     imu.dmpGetGravity(&grav, &rawQuat);
-    // Serial.printf(" 7");
 
     float Grav[] = { grav.x, grav.y, grav.z };
 
     if (correction.length_squared() == 0.0f) {
         correction = getCorrection(Grav, Mxyz, quat);
-        // Serial.printf(" 8");
     } else {
         Quat newCorr = getCorrection(Grav, Mxyz, quat);
-        // Serial.printf(" 9");
 
         if (!__isnanf(newCorr.w)) {
             correction = correction.slerp(newCorr, MAG_CORR_RATIO);
-            // Serial.printf(" 10");
         }
     }
-    // Serial.println(" end");
 
     quaternion = correction * quat;
 #else
@@ -217,9 +224,9 @@ void MPU9250Sensor::getMPUScaled()
 #if defined(_MAHONY_H_) || defined(_MADGWICK_H_)
     int16_t ax, ay, az, gx, gy, gz, mx, my, mz;
     imu.getMotion9(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
-    Gxyz[0] = ((float)gx - m_Calibration.G_off[0]) * gscale; // 250 LSB(d/s) default to radians/s
-    Gxyz[1] = ((float)gy - m_Calibration.G_off[1]) * gscale;
-    Gxyz[2] = ((float)gz - m_Calibration.G_off[2]) * gscale;
+    Gxyz[0] = ((float)gx - m_Calibration.G_off[0]) * GSCALE;
+    Gxyz[1] = ((float)gy - m_Calibration.G_off[1]) * GSCALE;
+    Gxyz[2] = ((float)gz - m_Calibration.G_off[2]) * GSCALE;
 
     Axyz[0] = (float)ax;
     Axyz[1] = (float)ay;
@@ -229,9 +236,9 @@ void MPU9250Sensor::getMPUScaled()
 #if useFullCalibrationMatrix == true
     for (i = 0; i < 3; i++)
         temp[i] = (Axyz[i] - m_Calibration.A_B[i]);
-    Axyz[0] = m_Calibration.A_Ainv[0][0] * temp[0] + m_Calibration.A_Ainv[0][1] * temp[1] + m_Calibration.A_Ainv[0][2] * temp[2];
-    Axyz[1] = m_Calibration.A_Ainv[1][0] * temp[0] + m_Calibration.A_Ainv[1][1] * temp[1] + m_Calibration.A_Ainv[1][2] * temp[2];
-    Axyz[2] = m_Calibration.A_Ainv[2][0] * temp[0] + m_Calibration.A_Ainv[2][1] * temp[1] + m_Calibration.A_Ainv[2][2] * temp[2];
+    Axyz[0] = (m_Calibration.A_Ainv[0][0] * temp[0] + m_Calibration.A_Ainv[0][1] * temp[1] + m_Calibration.A_Ainv[0][2] * temp[2]) * ASCALE;
+    Axyz[1] = (m_Calibration.A_Ainv[1][0] * temp[0] + m_Calibration.A_Ainv[1][1] * temp[1] + m_Calibration.A_Ainv[1][2] * temp[2]) * ASCALE;
+    Axyz[2] = (m_Calibration.A_Ainv[2][0] * temp[0] + m_Calibration.A_Ainv[2][1] * temp[1] + m_Calibration.A_Ainv[2][2] * temp[2]) * ASCALE;
 #else
     for (i = 0; i < 3; i++)
         Axyz[i] = (Axyz[i] - m - Calibration.A_B[i]);
@@ -253,13 +260,18 @@ void MPU9250Sensor::getMPUScaled()
 #if useFullCalibrationMatrix == true
     for (i = 0; i < 3; i++)
         temp[i] = (Mxyz[i] - m_Calibration.M_B[i]);
-    Mxyz[0] = m_Calibration.M_Ainv[0][0] * temp[0] + m_Calibration.M_Ainv[0][1] * temp[1] + m_Calibration.M_Ainv[0][2] * temp[2];
-    Mxyz[1] = m_Calibration.M_Ainv[1][0] * temp[0] + m_Calibration.M_Ainv[1][1] * temp[1] + m_Calibration.M_Ainv[1][2] * temp[2];
-    Mxyz[2] = m_Calibration.M_Ainv[2][0] * temp[0] + m_Calibration.M_Ainv[2][1] * temp[1] + m_Calibration.M_Ainv[2][2] * temp[2];
+    Mxyz[0] = (m_Calibration.M_Ainv[0][0] * temp[0] + m_Calibration.M_Ainv[0][1] * temp[1] + m_Calibration.M_Ainv[0][2] * temp[2]) * MAG_LSB_TO_MG_8G * .1f;
+    Mxyz[1] = (m_Calibration.M_Ainv[1][0] * temp[0] + m_Calibration.M_Ainv[1][1] * temp[1] + m_Calibration.M_Ainv[1][2] * temp[2]) * MAG_LSB_TO_MG_8G * .1f;
+    Mxyz[2] = (m_Calibration.M_Ainv[2][0] * temp[0] + m_Calibration.M_Ainv[2][1] * temp[1] + m_Calibration.M_Ainv[2][2] * temp[2]) * MAG_LSB_TO_MG_8G * .1f;
 #else
     for (i = 0; i < 3; i++)
         Mxyz[i] = (Mxyz[i] - m_Calibration.M_B[i]);
 #endif
+
+    uint32_t t = micros();
+    Mxyz[0] = f_mag_y.filter(Mxyz[0], t);
+    Mxyz[1] = f_mag_x.filter(Mxyz[1], t);
+    Mxyz[2] = f_mag_z.filter(Mxyz[2], t);
 }
 
 void MPU9250Sensor::startCalibration(int calibrationType)
@@ -267,11 +279,11 @@ void MPU9250Sensor::startCalibration(int calibrationType)
     ledManager.on();
 #if not(defined(_MAHONY_H_) || defined(_MADGWICK_H_))
     // with DMP, we just need mag data
-    constexpr int calibrationSamples = 300;
+    constexpr int calibrationSamples = 500;
 
     // Blink calibrating led before user should rotate the sensor
     m_Logger.info("Gently rotate the device while it's gathering magnetometer data");
-    ledManager.pattern(15, 300, 3000/310);
+    ledManager.pattern(15, 300, 3000 / 310);
     float* calibrationDataMag = (float*)malloc(calibrationSamples * 3 * sizeof(float));
     for (int i = 0; i < calibrationSamples; i++) {
         ledManager.on();
@@ -282,12 +294,15 @@ void MPU9250Sensor::startCalibration(int calibrationType)
         calibrationDataMag[i * 3 + 2] = -mz;
         Network::sendRawCalibrationData(calibrationDataMag, CALIBRATION_TYPE_EXTERNAL_MAG, 0);
         ledManager.off();
-        delay(250);
+        Serial.printf(".");
+        delay(16);
     }
+    Serial.println("");
     m_Logger.debug("Calculating calibration data...");
 
     float M_BAinv[4][3];
     CalculateCalibration(calibrationDataMag, calibrationSamples, M_BAinv);
+    m_Logger.debug("freeing space");
     free(calibrationDataMag);
 
     m_Logger.debug("[INFO] Magnetometer calibration matrix:");
@@ -335,7 +350,7 @@ void MPU9250Sensor::startCalibration(int calibrationType)
 
     // Blink calibrating led before user should rotate the sensor
     m_Logger.info("Gently rotate the device while it's gathering accelerometer and magnetometer data");
-    ledManager.pattern(15, 300, 3000/310);
+    ledManager.pattern(15, 300, 3000 / 310);
     float* calibrationDataAcc = (float*)malloc(calibrationSamples * 3 * sizeof(float));
     float* calibrationDataMag = (float*)malloc(calibrationSamples * 3 * sizeof(float));
     for (int i = 0; i < calibrationSamples; i++) {

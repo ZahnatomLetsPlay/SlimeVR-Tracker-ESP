@@ -47,54 +47,54 @@ THE SOFTWARE.
 #endif
 
 //Magnetometer Registers, AK8963
-#define MPU9250_RA_MAG_ADDRESS      0x0C
-#define MPU9250_RA_MAG_WHOAMI       0x00
-#define MPU9250_RA_MAG_INFO         0x01
-#define MPU9250_RA_MAG_ST1          0x02
-#define MPU9250_RA_MAG_XOUT_L       0x03
-#define MPU9250_RA_MAG_XOUT_H       0x04
-#define MPU9250_RA_MAG_YOUT_L       0x05
-#define MPU9250_RA_MAG_YOUT_H       0x06
-#define MPU9250_RA_MAG_ZOUT_L       0x07
-#define MPU9250_RA_MAG_ZOUT_H       0x08
-#define MPU9250_RA_MAG_ST2          0x09
-#define MPU9250_RA_MAG_ASAX         0x10
-#define MPU9250_RA_MAG_ASAY         0x11
-#define MPU9250_RA_MAG_ASAZ         0x12
-#define MPU9250_RA_MAG_CNTL1        0x0A
-#define MPU9250_RA_MAG_CNTL2        0x0B
-#define MPU9250_RA_MAG_ASTC         0x0C
+#define MPU9250_RA_MAG_ADDRESS      0x0D
+#define MPU9250_RA_MAG_WHOAMI       0x0D
+// #define MPU9250_RA_MAG_INFO         0x01 //unused
+// #define MPU9250_RA_MAG_ST1          0x02 //unused
+#define MPU9250_RA_MAG_XOUT_L       0x00
+#define MPU9250_RA_MAG_XOUT_H       0x01
+#define MPU9250_RA_MAG_YOUT_L       0x02
+#define MPU9250_RA_MAG_YOUT_H       0x03
+#define MPU9250_RA_MAG_ZOUT_L       0x04
+#define MPU9250_RA_MAG_ZOUT_H       0x05
+// #define MPU9250_RA_MAG_ST2          0x09 //unused
+#define MPU9250_RA_MAG_ASAX         0x09
+// #define MPU9250_RA_MAG_ASAY         0x11 //unused
+// #define MPU9250_RA_MAG_ASAZ         0x12 //unused
+#define MPU9250_RA_MAG_CNTL1        0x09
+#define MPU9250_RA_MAG_CNTL2        0x0A
+// #define MPU9250_RA_MAG_ASTC         0x0C //unused
 // #define MPU9250_RA_MAG_TS1          0x0D // SHIPMENT TEST, DO NOT USE
 // #define MPU9250_RA_MAG_TS2          0x0E // SHIPMENT TEST, DO NOT USE
-#define MPU9250_RA_MAG_I2CDIS       0x0F
-#define MPU9250_RA_MAG_ASAX         0x10
-#define MPU9250_RA_MAG_ASAY         0x11
-#define MPU9250_RA_MAG_ASAZ         0x12
+// #define MPU9250_RA_MAG_I2CDIS       0x0F //unused
+// #define MPU9250_RA_MAG_ASAX         0x10     defined above
+// #define MPU9250_RA_MAG_ASAY         0x11
+// #define MPU9250_RA_MAG_ASAZ         0x12     
 
-#define MPU9250_MAG_ST1_DRDY_BIT             0
-#define MPU9250_MAG_ST1_DOR_BIT              1
+// #define MPU9250_MAG_ST1_DRDY_BIT             0 //unused
+// #define MPU9250_MAG_ST1_DOR_BIT              1 //unused
 
-#define MPU9250_MAG_ST2_HOFL_BIT             3
-#define MPU9250_MAG_ST2_BITM_BIT             4
+// #define MPU9250_MAG_ST2_HOFL_BIT             3 //unused
+// #define MPU9250_MAG_ST2_BITM_BIT             4 //unused
 
-#define MPU9250_MAG_CNTL1_MODE_BIT           3
-#define MPU9250_MAG_CNTL1_MODE_LENGTH        4
-#define MPU9250_MAG_CNTL1_RES_BIT            4
+// #define MPU9250_MAG_CNTL1_MODE_BIT           3 //unused
+// #define MPU9250_MAG_CNTL1_MODE_LENGTH        4 //unused
+// #define MPU9250_MAG_CNTL1_RES_BIT            4 //unused
 
-#define MPU9250_MAG_CNTL2_RESET              0x01
+// #define MPU9250_MAG_CNTL2_RESET              0x01 //unused
 
-#define MPU9250_MAG_MODE_POWERDOWN           0x0
-#define MPU9250_MAG_MODE_SINGLE              0x1
-#define MPU9250_MAG_MODE_CONTINUOUS_8HZ      0x2
-#define MPU9250_MAG_MODE_EXTERNAL            0x4
-#define MPU9250_MAG_MODE_CONTINUOUS_100HZ    0x6
-#define MPU9250_MAG_MODE_SELFTEST            0x8
-#define MPU9250_MAG_MODE_FUSEROM             0xF
+// #define MPU9250_MAG_MODE_POWERDOWN           0x0 //unused
+// #define MPU9250_MAG_MODE_SINGLE              0x1 //unused
+// #define MPU9250_MAG_MODE_CONTINUOUS_8HZ      0x2 //unused
+// #define MPU9250_MAG_MODE_EXTERNAL            0x4 //unused
+// #define MPU9250_MAG_MODE_CONTINUOUS_100HZ    0x6 //unused
+// #define MPU9250_MAG_MODE_SELFTEST            0x8 //unused
+// #define MPU9250_MAG_MODE_FUSEROM             0xF //unused
 
-#define MPU9250_MAG_RES_14_BIT               0
-#define MPU9250_MAG_RES_16_BIT               1
+// #define MPU9250_MAG_RES_14_BIT               0 //unused
+// #define MPU9250_MAG_RES_16_BIT               1 //unused
 
-#define MPU9250_MAG_CNTL2_SRST_BIT           0
+// #define MPU9250_MAG_CNTL2_SRST_BIT           0 //unused
 
 //MPU6500
 #define MPU9250_ADDRESS_AD0_LOW     0x68 // address pin low (GND), default for InvenSense evaluation board
