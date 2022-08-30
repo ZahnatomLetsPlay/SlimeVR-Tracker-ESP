@@ -24,7 +24,7 @@
 
 #include <i2cscan.h>
 
-#include "mpu6050sensor.h"
+// #include "mpu6050sensor.h"
 #include "mpu9250sensor.h"
 #include "sensor.h"
 
@@ -56,6 +56,7 @@ void SensorFactory::create()
         if (first_addr == 0) {
             this->IMUs[SensorCount] = new EmptySensor();
             // tempIMUs[SensorCount] = NULL;
+            // this->IMUs[SensorCount] = NULL;
         } else {
             // this->IMUs[SensorCount] = new MPU6050Sensor();
             // tempIMUs[SensorCount] = new MPU6050Sensor();
@@ -99,10 +100,10 @@ void SensorFactory::motionSetup()
         if (IMUs[SensorCount]->Connected) {
             this->SetIMU(SensorCount);
             IMUs[SensorCount]->motionSetup();
-            UI::SetIMUStatus(SensorCount,
-                IMUs[SensorCount]->isWorking() ? true : false);
+            // UI::SetIMUStatus(SensorCount,
+            //     IMUs[SensorCount]->isWorking() ? true : false);
         } else {
-            UI::SetIMUStatus(SensorCount, false);
+            // UI::SetIMUStatus(SensorCount, false);
         }
     }
 }

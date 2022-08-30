@@ -67,7 +67,7 @@ void WiFiNetwork::setUp() {
     Serial.printf("[NOTICE] Status: %d", status);
     wifiState = 1;
     wifiConnectionTimeout = millis();
-    UI::SetMessage(2);
+    // UI::SetMessage(2);
     
 #if ESP8266
 #if POWERSAVING_MODE == POWER_SAVING_NONE
@@ -107,7 +107,7 @@ void onConnected() {
     isWifiConnected = true;
     hadWifi = true;
     Serial.printf("[NOTICE] WiFi: Connected successfully to SSID '%s', ip address %s\n", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
-    UI::SetMessage(4);
+    // UI::SetMessage(4);
 
 }
 
@@ -139,7 +139,7 @@ void WiFiNetwork::upkeep() {
                     if(!hadWifi && !WiFi.smartConfigDone() && wifiConnectionTimeout + 11000 < millis()) {
                         if(WiFi.status() != WL_IDLE_STATUS) {
                             Serial.printf("[NOTICE] WiFi: Can't connect from any credentials, status: %d.\n", WiFi.status());
-                                UI::SetMessage(3);
+                                // UI::SetMessage(3);
                         }
                         startProvisioning();
                     }

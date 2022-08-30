@@ -279,7 +279,7 @@ void MPU9250Sensor::startCalibration(int calibrationType)
     ledManager.on();
 #if not(defined(_MAHONY_H_) || defined(_MADGWICK_H_))
     // with DMP, we just need mag data
-    constexpr int calibrationSamples = 500;
+    constexpr int calibrationSamples = 300; //KEEP THIS AT 300; 500 IS KNOWN TO CAUSE OOM ERRORS
 
     // Blink calibrating led before user should rotate the sensor
     m_Logger.info("Gently rotate the device while it's gathering magnetometer data");
@@ -293,17 +293,17 @@ void MPU9250Sensor::startCalibration(int calibrationType)
         calibrationDataMag[i * 3 + 1] = mx;
         calibrationDataMag[i * 3 + 2] = -mz;
         Network::sendRawCalibrationData(calibrationDataMag, CALIBRATION_TYPE_EXTERNAL_MAG, 0);
-        m_Logger.debug("X: %d Y: %d Z: %d", mx, my, mz);
         ledManager.off();
         Serial.printf(".");
+        
         delay(16);
     }
     Serial.println("");
+
     m_Logger.debug("Calculating calibration data...");
 
     float M_BAinv[4][3];
     CalculateCalibration(calibrationDataMag, calibrationSamples, M_BAinv);
-    m_Logger.debug("freeing space");
     free(calibrationDataMag);
 
     m_Logger.debug("[INFO] Magnetometer calibration matrix:");

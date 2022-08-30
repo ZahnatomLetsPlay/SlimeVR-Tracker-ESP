@@ -17,7 +17,7 @@ namespace SlimeVR
         private:
             uint32_t m_Status;
 
-            Logging::Logger m_Logger = Logging::Logger("StatusManager");
+            // Logging::Logger m_Logger = Logging::Logger("StatusManager");
         };
     }
 }

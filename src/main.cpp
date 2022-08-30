@@ -105,11 +105,11 @@ void setup()
   ledManager.setup();
   configuration.setup();
 
-  UI::Setup();
-  UI::DrawSplash();
-  delay(1500);
-  UI::MainUIFrame();
-  UI::SetMessage(1);
+  // UI::Setup();
+  // UI::DrawSplash();
+  // delay(1500);
+  // UI::MainUIFrame();
+  // UI::SetMessage(1);
 
   Serial.begin(serialBaudRate);
   SerialCommands::setUp();

@@ -379,7 +379,7 @@ void ServerConnection::connect()
                 connected = true;
                 statusManager.setStatus(SlimeVR::Status::SERVER_CONNECTING, false);
                 Serial.printf("[Handshake] Handshake successful, server is %s:%d\n", Udp.remoteIP().toString().c_str(), + Udp.remotePort());
-                UI::SetMessage(6);
+                // UI::SetMessage(6);
                 return;
             default:
             continue;
@@ -394,7 +394,7 @@ void ServerConnection::connect()
     {
         lastConnectionAttemptMs = now;
         Serial.println("Looking for the server...");
-        UI::SetMessage(4);
+        // UI::SetMessage(4);
         Network::sendHandshake();
     }
 }
@@ -470,7 +470,7 @@ void ServerConnection::update(Sensor *Sensors[])
                 sensorStateNotifieds[SensorCount] = false;
             }
             Serial.println("Connection to server timed out");
-            UI::SetMessage(5);
+            // UI::SetMessage(5);
 
         }
     }
